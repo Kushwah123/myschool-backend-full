@@ -4,7 +4,7 @@
 
 
 // ===================== studentController.js =====================
-const Student = require('../models/student');
+const Student = require('../models/Student');
 const Class = require('../models/class');
 
 const generateAdmissionNumber = async () => {
