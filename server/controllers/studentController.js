@@ -5,7 +5,7 @@
 
 // ===================== studentController.js =====================
 const Student = require('../models/Student');
-const Class = require('../models/class');
+const Class = require('../models/Class');
 
 const generateAdmissionNumber = async () => {
   const count = await Student.countDocuments();
