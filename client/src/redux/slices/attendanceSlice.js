@@ -2,13 +2,14 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
+const API = process.env.REACT_APP_API_URL
 export const fetchAttendance = createAsyncThunk('attendance/fetchAttendance', async () => {
-  const res = await axios.get('/api/attendance');
+  const res = await axios.get(`${API}api/attendance`);
   return res.data;
 });
 
 export const markAttendance = createAsyncThunk('attendance/markAttendance', async (data) => {
-  const res = await axios.post('/api/attendance/mark', data);
+  const res = await axios.post(`${API}api/attendance/mark`, data);
   return res.data;
 });
 

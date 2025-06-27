@@ -1,12 +1,13 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
+const API = process.env.REACT_APP_API_URL
 // 🔄 Fetch homework by classId
 export const fetchHomeworkByClass = createAsyncThunk(
   'homework/fetchHomeworkByClass',
   async (classId, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`/api/homework/class/${classId}`);
+      const response = await axios.get(`${API}api/homework/class/${classId}`);
       return response.data;
     } catch (err) {
       return rejectWithValue(err.response.data);

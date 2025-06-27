@@ -3,14 +3,14 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-const API = 'http://localhost:5000/api/subjects';
+const API = process.env.REACT_APP_API_URL
 
 // ✅ Fetch subjects
 export const fetchSubjects = createAsyncThunk(
   'subjects/fetchSubjects',
   async (_, { rejectWithValue }) => {
     try {
-      const res = await axios.get(API);
+      const res = await axios.get(`${API}api/subjects/fetchSubjects`);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -23,7 +23,7 @@ export const createSubject = createAsyncThunk(
   'subjects/createSubject',
   async (subjectData, { rejectWithValue }) => {
     try {
-      const res = await axios.post("/api/subjects", subjectData);
+      const res = await axios.post(`${API}/subjects`, subjectData);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -35,7 +35,7 @@ export const assignSubject = createAsyncThunk(
   'subjects/assignSubject',
   async (assignmentData, { rejectWithValue }) => {
     try {
-      const res = await axios.post(`/api/subjects/assign`, assignmentData);
+      const res = await axios.post(`${API}api/subjects/assign`, assignmentData);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);

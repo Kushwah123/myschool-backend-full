@@ -3,13 +3,13 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-const API = 'http://localhost:5000/api/marks';
+const API =  process.env.REACT_APP_API_URL;
 
 export const createMarks = createAsyncThunk(
   'marks/createMarks',
   async (data, { rejectWithValue }) => {
     try {
-      const res = await axios.post(`/api/marks/add`, data);
+      const res = await axios.post(`${API}/marks/add`, data);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -21,7 +21,7 @@ export const fetchMarks = createAsyncThunk(
   'marks/fetchMarks',
   async (_, { rejectWithValue }) => {
     try {
-      const res = await axios.get(`${API}`);
+      const res = await axios.get(`${API}api/marks/fetchMarks`);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -33,7 +33,7 @@ export const updateMarks = createAsyncThunk(
   'marks/updateMarks',
   async ({ id, updatedData }, { rejectWithValue }) => {
     try {
-      const res = await axios.put(`/api/marks/${id}`, updatedData);
+      const res = await axios.put(`${API}api/marks/${id}`, updatedData);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);

@@ -18,7 +18,7 @@ const store = configureStore({
     auth: authReducer,
     students: studentReducer,
     teachers: teacherReducer,
-    fee: feeReducer,
+    fees: feeReducer,
     attendance: attendanceReducer,
     marks: marksReducer,
     parents: parentReducer,

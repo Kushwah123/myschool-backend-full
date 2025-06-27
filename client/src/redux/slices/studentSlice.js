@@ -3,14 +3,14 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-const API = 'http://localhost:5000/api/students';
 
+const API = process.env.REACT_APP_API_URL
 // ✅ Fetch all students
 export const fetchStudents = createAsyncThunk(
   'students/fetchStudents',
   async (_, { rejectWithValue }) => {
     try {
-      const res = await axios.get(API);
+      const res = await axios.get(`${API}api/students`);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -23,7 +23,7 @@ export const createStudent = createAsyncThunk(
   'students/createStudent',
   async (studentData, { rejectWithValue }) => {
     try {
-      const res = await axios.post(API, studentData);
+      const res = await axios.post(`${API}api/students`, studentData);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -36,7 +36,7 @@ export const updateStudent = createAsyncThunk(
   'students/updateStudent',
   async ({ id, studentData }, { rejectWithValue }) => {
     try {
-      const res = await axios.put(`/api/students/${id}`, studentData);
+      const res = await axios.put(`${API}api/students/${id}`, studentData);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -49,7 +49,7 @@ export const deleteStudent = createAsyncThunk(
   'students/deleteStudent',
   async (id, { rejectWithValue }) => {
     try {
-      await axios.delete(`/api/students/${id}`);
+      await axios.delete(`${API}api/students/${id}`);
       return id;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -62,7 +62,7 @@ export const fetchStudentsByClass = createAsyncThunk(
   'students/fetchStudentsByClass',
   async (classId, { rejectWithValue }) => {
     try {
-      const res = await axios.get(`/api/students/class/${classId}`);
+      const res = await axios.get(`${API}api/students/class/${classId}`);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -73,7 +73,7 @@ export const fetchStudentByParent = createAsyncThunk(
   'students/fetchStudentByParent',
   async (parentId, { rejectWithValue }) => {
     try {
-      const res = await axios.get(`/api/students/parent/${parentId}`);
+      const res = await axios.get(`${API}api/students/parent/${parentId}`);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);

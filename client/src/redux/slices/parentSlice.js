@@ -1,10 +1,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-
+const API = process.env.REACT_APP_API_URL
 // 📌 GET: Fetch all parents (with pagination & search)
 export const fetchParents = createAsyncThunk("parents/fetchAll", async (query = "", thunkAPI) => {
   try {
-    const { data } = await axios.get(`/api/parents${query}`);
+    const { data } = await axios.get(`${API}api/parents${query}`);
     return data;
   } catch (err) {
     return thunkAPI.rejectWithValue(err.response?.data?.message || "Failed to fetch parents");
@@ -14,7 +14,7 @@ export const fetchParents = createAsyncThunk("parents/fetchAll", async (query = 
 // 📌 POST: Create parent
 export const createParent = createAsyncThunk("parents/create", async (parentData, thunkAPI) => {
   try {
-    const { data } = await axios.post("/api/parents", parentData);
+    const { data } = await axios.post(`${API}api/parents`, parentData);
     return data;
   } catch (err) {
     return thunkAPI.rejectWithValue(err.response?.data?.message || "Failed to create parent");
@@ -24,7 +24,7 @@ export const createParent = createAsyncThunk("parents/create", async (parentData
 // 📌 PUT: Update parent
 export const updateParent = createAsyncThunk("parents/update", async ({ id, parentData }, thunkAPI) => {
   try {
-    const { data } = await axios.put(`/api/parents/${id}`, parentData);
+    const { data } = await axios.put(`${API}api/parents/${id}`, parentData);
     return data;
   } catch (err) {
     return thunkAPI.rejectWithValue(err.response?.data?.message || "Failed to update parent");
@@ -34,7 +34,7 @@ export const updateParent = createAsyncThunk("parents/update", async ({ id, pare
 // 📌 DELETE: Delete parent
 export const deleteParent = createAsyncThunk("parents/delete", async (id, thunkAPI) => {
   try {
-    await axios.delete(`/api/parents/${id}`);
+    await axios.delete(`${API}api/parents/${id}`);
     return id;
   } catch (err) {
     return thunkAPI.rejectWithValue(err.response?.data?.message || "Failed to delete parent");

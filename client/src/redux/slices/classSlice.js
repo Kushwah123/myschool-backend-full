@@ -1,8 +1,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
+const API = process.env.REACT_APP_API_URL
 export const fetchClasses = createAsyncThunk('class/fetchClasses', async () => {
-  const response = await axios.get('/api/classes'); // backend route
+  const response = await axios.get(`${API}api/classes`); // backend route
   return response.data;
 });
 // ✅ Create class
@@ -10,7 +11,7 @@ export const createClass = createAsyncThunk(
   'classes/createClass',
   async (classData, { rejectWithValue }) => {
     try {
-      const res = await axios.post("/api/classes", classData);
+      const res = await axios.post(`${API}api/classes`, classData);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);

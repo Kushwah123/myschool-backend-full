@@ -3,14 +3,14 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-const API = 'http://localhost:5000/api/teachers';
+const API = process.env.REACT_APP_API_URL
 
 // ✅ Fetch all teachers
 export const fetchTeachers = createAsyncThunk(
   'teachers/fetchTeachers',
   async (_, { rejectWithValue }) => {
     try {
-      const res = await axios.get(API);
+      const res = await axios.get(`${API}api/teachers`);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -23,7 +23,7 @@ export const registerTeacher = createAsyncThunk(
   'teachers/registerTeacher',
   async (teacherData, { rejectWithValue }) => {
     try {
-      const res = await axios.post(`/api/teachers/register`, teacherData);
+      const res = await axios.post(`${API}api/teachers/register`, teacherData);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
