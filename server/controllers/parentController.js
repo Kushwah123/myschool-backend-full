@@ -40,7 +40,7 @@
 // };
 
 
-const Parent = require('../models/parent');
+const Parent = require('../models/Parent');
 
 // ➕ Add Parent
 exports.addParent = async (req, res) => {
