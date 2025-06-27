@@ -1,4 +1,4 @@
-const Class = require('../models/class');
+const Class = require('../models/Class');
 const Subject = require('../models/subjectModel');
 
 // ➕ Create Class
