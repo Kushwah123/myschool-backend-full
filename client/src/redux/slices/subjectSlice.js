@@ -35,7 +35,7 @@ export const assignSubject = createAsyncThunk(
   'subjects/assignSubject',
   async (assignmentData, { rejectWithValue }) => {
     try {
-      const res = await axios.post(`${API}/assign`, assignmentData);
+      const res = await axios.post(`/api/subjects/assign`, assignmentData);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);

@@ -9,7 +9,7 @@ export const createMarks = createAsyncThunk(
   'marks/createMarks',
   async (data, { rejectWithValue }) => {
     try {
-      const res = await axios.post(`${API}/add`, data);
+      const res = await axios.post(`/api/marks/add`, data);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -33,7 +33,7 @@ export const updateMarks = createAsyncThunk(
   'marks/updateMarks',
   async ({ id, updatedData }, { rejectWithValue }) => {
     try {
-      const res = await axios.put(`${API}/${id}`, updatedData);
+      const res = await axios.put(`/api/marks/${id}`, updatedData);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);

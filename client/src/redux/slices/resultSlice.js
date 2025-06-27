@@ -10,7 +10,7 @@ export const fetchMarksByStudent = createAsyncThunk(
   'results/fetchMarksByStudent',
   async (studentId, { rejectWithValue }) => {
     try {
-      const res = await axios.get(`${API}/student/${studentId}`);
+      const res = await axios.get(`/api/marks/student/${studentId}`);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);

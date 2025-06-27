@@ -23,7 +23,7 @@ export const registerTeacher = createAsyncThunk(
   'teachers/registerTeacher',
   async (teacherData, { rejectWithValue }) => {
     try {
-      const res = await axios.post(`${API}/register`, teacherData);
+      const res = await axios.post(`/api/teachers/register`, teacherData);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);

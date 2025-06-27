@@ -36,7 +36,7 @@ export const updateStudent = createAsyncThunk(
   'students/updateStudent',
   async ({ id, studentData }, { rejectWithValue }) => {
     try {
-      const res = await axios.put(`${API}/${id}`, studentData);
+      const res = await axios.put(`/api/students/${id}`, studentData);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -49,7 +49,7 @@ export const deleteStudent = createAsyncThunk(
   'students/deleteStudent',
   async (id, { rejectWithValue }) => {
     try {
-      await axios.delete(`${API}/${id}`);
+      await axios.delete(`/api/students/${id}`);
       return id;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -62,7 +62,7 @@ export const fetchStudentsByClass = createAsyncThunk(
   'students/fetchStudentsByClass',
   async (classId, { rejectWithValue }) => {
     try {
-      const res = await axios.get(`${API}/class/${classId}`);
+      const res = await axios.get(`/api/students/class/${classId}`);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -73,7 +73,7 @@ export const fetchStudentByParent = createAsyncThunk(
   'students/fetchStudentByParent',
   async (parentId, { rejectWithValue }) => {
     try {
-      const res = await axios.get(`${API}/parent/${parentId}`);
+      const res = await axios.get(`/api/students/parent/${parentId}`);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
