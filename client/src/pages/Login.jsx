@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { loginUser } from '../redux/slices/authSlice'
+import { loginUser } from '../redux/slices/authSlice';
 import { useNavigate } from 'react-router-dom';
 import { Form, Button, Container, Row, Col, Card } from 'react-bootstrap';
+import './Login.css'; // custom CSS for background and design
 
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  const [role, setRole] = useState('admin');
-  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [formData, setFormData] = useState({ mobile: '', password: '' });
 
   const handleChange = e => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -17,44 +16,36 @@ const Login = () => {
 
   const handleLogin = async e => {
     e.preventDefault();
-    const result = await dispatch(loginUser({ ...formData, role }));
+    const result = await dispatch(loginUser(formData));
     if (result?.payload?.token) {
+      const role = result.payload.user.role;
+      
       navigate(`/${role}/dashboard`);
     }
   };
 
   return (
-    <Container className="mt-5">
-      <Row className="justify-content-center">
-        <Col xs={12} md={6}>
-          <Card>
-            <Card.Body>
-              <h3 className="text-center mb-4">Login</h3>
+    <div className="login-bg d-flex align-items-center justify-content-center min-vh-100">
+      <Container>
+        <Row className="justify-content-center">
+          <Col xs={12} md={6} lg={5}>
+            <Card className="shadow-lg border-0 rounded-4 p-4 login-card">
+              <h3 className="text-center mb-4 text-primary">🔐 School Login</h3>
               <Form onSubmit={handleLogin}>
                 <Form.Group className="mb-3">
-                  <Form.Label>Role</Form.Label>
-                  <Form.Select value={role} onChange={e => setRole(e.target.value)}>
-                    <option value="admin">Admin</option>
-                    <option value="teacher">Teacher</option>
-                    <option value="accountant">Accountant</option>
-                    <option value="student">Student</option>
-                  </Form.Select>
-                </Form.Group>
-
-                <Form.Group className="mb-3">
-                  <Form.Label>Email</Form.Label>
+                  <Form.Label className="fw-semibold">Mobile Number</Form.Label>
                   <Form.Control
-                    type="email"
-                    name="email"
-                    value={formData.email}
+                    type="text"
+                    name="mobile"
+                    value={formData.mobile}
                     onChange={handleChange}
-                    placeholder="Enter email"
+                    placeholder="Enter mobile number"
                     required
                   />
                 </Form.Group>
 
                 <Form.Group className="mb-3">
-                  <Form.Label>Password</Form.Label>
+                  <Form.Label className="fw-semibold">🔑 Password</Form.Label>
                   <Form.Control
                     type="password"
                     name="password"
@@ -65,19 +56,21 @@ const Login = () => {
                   />
                 </Form.Group>
 
-                <Button type="submit" variant="primary" className="w-100">
+                <Button type="submit" variant="primary" className="w-100 mt-2">
                   Login
                 </Button>
-              </Form>
 
-              <div className="text-center mt-3">
-                <a href="/parent-login">Parent Login</a>
-              </div>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-    </Container>
+                <div className="text-center mt-3">
+                  <a href="/parent-login" className="text-decoration-none text-muted">
+                    Parent Login
+                  </a>
+                </div>
+              </Form>
+            </Card>
+          </Col>
+        </Row>
+      </Container>
+    </div>
   );
 };
 

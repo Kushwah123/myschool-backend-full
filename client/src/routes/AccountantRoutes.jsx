@@ -8,12 +8,14 @@ import AddParent from "../pages/Admin/AddParent";
 import AddStudent from '../pages/Admin/AddStudent';
 import AllStudents from '../pages/Admin/AllStudents';
 import FeeStructure from '../pages/Admin/FeeStructure';
+import AccountantLayout from '../layouts/AccountantLayout';
 
 
 
 const AccountantRoutes = () => {
   return ( 
     <Routes>
+      <Route path="/" element={<AccountantLayout />}>
       <Route path="/dashboard" element={<AccountantDashboard />} />
       <Route path="/collect-fee" element={<FeeCollection />}  />
       <Route path="/receipts" element={<Receipts />} />
@@ -22,7 +24,7 @@ const AccountantRoutes = () => {
       <Route path="/add-parent" element={<AddParent />} />
       <Route path="/all-students" element={<AllStudents />} />
       <Route path="/fee-structure" element={<FeeStructure />} />
-      
+      </Route>
     </Routes>
   );
 };

@@ -3,7 +3,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-     const API = process.env.REACT_APP_API_URL  
+     const API = process.env.NODE_ENV === "development"
+    ? "http://localhost:5000/" // ✅ Localhost
+    : process.env.REACT_APP_API_URL; // ✅ Render or production 
 export const fetchReceipts = createAsyncThunk('accountant/fetchReceipts', async () => {
   const res = await axios.get(`${API}api/fees/receipts`);
   return res.data;

@@ -5,6 +5,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { createStudent } from "../../redux/slices/studentSlice";
 import { fetchClasses } from "../../redux/slices/classSlice";
+import { fetchVillages } from "../../redux/slices/villageSlice";
 import { toast } from "react-toastify";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -13,12 +14,13 @@ import QRCode from "qrcode";
 const AddStudent = () => {
   const dispatch = useDispatch();
   const { classes } = useSelector((state) => state.class);
+  const { list: villages } = useSelector((state) => state.village);
   const { loading } = useSelector((state) => state.students);
 
   const [formData, setFormData] = useState({
     fullName: "", gender: "", dob: "", aadharNumber: "", bloodGroup: "", category: "",
     photo: null, mobile: "", address: "", fatherName: "", motherName: "",
-    classId: "", sectionId: "", transportMode: ""
+    classId: "", sectionId: "", transportMode: "" ,villageId: ""
   });
 
   const [photoPreview, setPhotoPreview] = useState(null);
@@ -26,6 +28,7 @@ const AddStudent = () => {
 
   useEffect(() => {
     dispatch(fetchClasses());
+    dispatch(fetchVillages());
   }, [dispatch]);
 
   const handleChange = (e) => {
@@ -174,10 +177,29 @@ const AddStudent = () => {
           </Row>
 
           <Row className="mb-3">
-            <Col md={6}><Form.Group><Form.Label>Mobile Number *</Form.Label>
+            <Col md={3}><Form.Group><Form.Label>Mobile Number *</Form.Label>
               <Form.Control required name="mobile" maxLength={10} onChange={handleChange} /></Form.Group></Col>
             <Col md={6}><Form.Group><Form.Label>Address *</Form.Label>
               <Form.Control as="textarea" required name="address" rows={1} onChange={handleChange} /></Form.Group></Col>
+              <Col md={3}>
+  <Form.Group>
+    <Form.Label>Village *</Form.Label>
+    <Form.Select
+      required
+      name="villageId"
+      value={formData.villageId}
+      onChange={handleChange}
+    >
+      <option value="">Select Village</option>
+      {villages.map((v) => (
+        <option key={v._id} value={v._id}>
+          {v.villageName}
+        </option>
+      ))}
+    </Form.Select>
+  </Form.Group>
+</Col>
+
           </Row>
 
           <Row className="mb-3">

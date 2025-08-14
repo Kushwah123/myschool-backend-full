@@ -29,7 +29,7 @@ const marksRoutes = require('./routes/marksRoutes');
 const attendanceRoutes = require('./routes/attendanceRoutes');
 const homeworkRoutes = require('./routes/homeworkRoutes');
 const enquiryRoutes = require('./routes/enquiryRoutes');
-
+const villageRoutes = require('./routes/villageRoutes');
 
 
 
@@ -45,6 +45,7 @@ app.use('/api/marks', marksRoutes);
 app.use('/api/attendance', attendanceRoutes);
 app.use('/api/homework', homeworkRoutes);
 app.use('/api/enquiries', enquiryRoutes);
+app.use('/api/villages', villageRoutes);
 
 
 // Default Route

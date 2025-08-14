@@ -26,6 +26,8 @@ router.get('/:id', studentController.getStudentById);
 router.put('/:id', studentController.updateStudent);
 router.delete('/:id', studentController.deleteStudent);
 router.get('/class/:classId', studentController.getStudentsByClass);
+router.post('/delete-multiple', studentController.deleteMultipleStudents);
+
 
 module.exports = router;
 

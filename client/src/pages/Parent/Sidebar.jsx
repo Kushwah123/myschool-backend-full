@@ -1,23 +1,24 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const TeacherSidebar = () => {
-  return (
-    <div>
-      <h5>Teacher Panel</h5>
-      <ul className="nav flex-column">
-        <li className="nav-item mb-2">
-          <Link to="/teacher/dashboard" className="nav-link text-white">Dashboard</Link>
-        </li>
-        <li className="nav-item mb-2">
-          <Link to="/teacher/attendance" className="nav-link text-white">Attendance</Link>
-        </li>
-        <li className="nav-item mb-2">
-          <Link to="/teacher/marks" className="nav-link text-white">Marks</Link>
-        </li>
-      </ul>
-    </div>
-  );
-};
+const Sidebar = ({ onClose }) => (
+  <div className="p-3">
+    <button className="btn-close btn-close-white d-md-none mb-3" onClick={onClose}></button>
+    <ul className="nav flex-column">
+      <li className="nav-item">
+        <Link to="/parent/dashboard" className="nav-link text-white">🏠 Dashboard</Link>
+      </li>
+      <li className="nav-item">
+        <Link to="/parent/parent-child" className="nav-link text-white">👨‍👩‍👧 My Child</Link>
+      </li>
+      <li className="nav-item">
+        <Link to="/parent/parent-fees" className="nav-link text-white">💳 Fees</Link>
+      </li>
+      <li className="nav-item">
+        <Link to="/parent/parent-receipts" className="nav-link text-white">📄 Receipts</Link>
+      </li>
+    </ul>
+  </div>
+);
 
-export default TeacherSidebar;
+export default Sidebar;

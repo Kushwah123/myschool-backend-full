@@ -1,0 +1,53 @@
+/* AdminLayout.css */
+
+.admin-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.d-flex {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.admin-sidebar {
+  width: 250px;
+  background-color: #343a40;
+  color: white;
+  height: 100%;
+  overflow-y: auto;
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Sidebar Toggle States */
+.show-sidebar {
+  transform: translateX(0%);
+}
+
+.hide-sidebar {
+  transform: translateX(-100%);
+}
+
+/* For medium screen and above: always show sidebar */
+@media (min-width: 768px) {
+  .admin-sidebar {
+    transform: translateX(0%) !important;
+    position: sticky;
+    top: 56px; /* header height */
+    height: calc(100vh - 56px);
+  }
+
+  .show-sidebar,
+  .hide-sidebar {
+    transform: translateX(0%) !important;
+  }
+}
+
+.admin-content {
+  flex-grow: 1;
+  height: 100%;
+  overflow-y: auto;
+}

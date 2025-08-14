@@ -1,7 +1,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-const API = process.env.REACT_APP_API_URL
+const API = process.env.NODE_ENV === "development"
+    ? "http://localhost:5000/" // ✅ Localhost
+    : process.env.REACT_APP_API_URL; // ✅ Render or production 
 // 🔄 Fetch homework by classId
 export const fetchHomeworkByClass = createAsyncThunk(
   'homework/fetchHomeworkByClass',

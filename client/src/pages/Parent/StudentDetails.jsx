@@ -6,7 +6,7 @@ import { fetchStudentByParent } from '../../redux/slices/studentSlice';
 const StudentDetails = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
-  const { student } = useSelector((state) => state.student);
+  const { students } = useSelector((state) => state.students);
 
   useEffect(() => {
     dispatch(fetchStudentByParent(user._id));
@@ -17,11 +17,11 @@ const StudentDetails = () => {
       <h3>Student Details</h3>
       <table className="table">
         <tbody>
-          <tr><th>Name</th><td>{student.fullName}</td></tr>
-          <tr><th>Class</th><td>{student.class?.name}</td></tr>
-          <tr><th>Section</th><td>{student.section}</td></tr>
-          <tr><th>Roll No</th><td>{student.rollNumber}</td></tr>
-          <tr><th>Transport</th><td>{student.transport}</td></tr>
+          <tr><th>Name</th><td>{students.fullName}</td></tr>
+          <tr><th>Class</th><td>{students.class?.name}</td></tr>
+          <tr><th>Section</th><td>{students.section}</td></tr>
+          <tr><th>Roll No</th><td>{students.rollNumber}</td></tr>
+          <tr><th>Transport</th><td>{students.transport}</td></tr>
         </tbody>
       </table>
     </div>

@@ -4,7 +4,9 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 
-const API = process.env.REACT_APP_API_URL
+const API = process.env.NODE_ENV === "development"
+    ? "http://localhost:5000/" // ✅ Localhost
+    : process.env.REACT_APP_API_URL; // ✅ Render or production 
 // ✅ Fetch all students
 export const fetchStudents = createAsyncThunk(
   'students/fetchStudents',
@@ -51,6 +53,17 @@ export const deleteStudent = createAsyncThunk(
     try {
       await axios.delete(`${API}api/students/${id}`);
       return id;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  }
+);
+export const deleteMultipleStudents = createAsyncThunk(
+  'students/deleteMultiple',
+  async (ids, { rejectWithValue }) => {
+    try {
+      const res = await axios.post(`${API}/api/students/delete-multiple`, { ids });
+      return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
     }
@@ -125,12 +138,20 @@ const studentSlice = createSlice({
         state.error = action.payload;
         state.status = 'failed';
       })
+          .addCase(deleteMultipleStudents.fulfilled, (state, action) => {
+      state.students = state.students.filter(
+        (s) => !action.meta.arg.includes(s._id)
+      );
+    })
+      
       .addCase(fetchStudentsByClass.fulfilled, (state, action) => {
         state.classStudents = action.payload;
       })
       .addCase(fetchStudentsByClass.rejected, (state, action) => {
         state.error = action.payload;
       });
+      
+
   },
 });
 

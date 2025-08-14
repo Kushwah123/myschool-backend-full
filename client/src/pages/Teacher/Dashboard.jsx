@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import TeacherSidebar from './TeacherSidebar';
+import Sidebar from './Sidebar';
 import { Navbar, Container, Row, Col } from 'react-bootstrap';
 
 const Dashboard = () => {
@@ -9,14 +9,10 @@ const Dashboard = () => {
   return (
     <div className="d-flex">
       {/* 📌 Sidebar (Left) */}
-      <TeacherSidebar />
+      
 
       {/* 📌 Main Content (Right) */}
-      <div className="flex-grow-1">
-        {/* 🔹 Top Navbar */}
-        <Navbar bg="primary" variant="dark" className="px-4">
-          <Navbar.Brand className="fw-bold">Welcome, {user?.name || 'Teacher'}</Navbar.Brand>
-        </Navbar>
+
 
         {/* 🔹 Page Content */}
         <Container fluid className="mt-4">
@@ -28,7 +24,7 @@ const Dashboard = () => {
           </Row>
         </Container>
       </div>
-    </div>
+    
   );
 };
 

@@ -6,9 +6,11 @@ import Marks from '../pages/Teacher/Marks';
 import NotFound from '../pages/NotFound';
 // import Homework from '../pages/Teacher/Homework';
 import EnquiryForm from '../pages/Teacher/EnquiryForm';
+import TeacherLayout from '../layouts/TeacherLayout';
 
 const TeacherRoutes = () => (
   <Routes>
+    <Route path='/' element={<TeacherLayout/>}>
     <Route path="dashboard" element={<Dashboard />} />
     <Route path="attendance" element={<Attendance />} />
     <Route path="marks" element={<Marks />} />
@@ -16,6 +18,7 @@ const TeacherRoutes = () => (
 
     {/* <Route path="homework" element={<Homework />} /> */}
     <Route path="*" element={<NotFound />} />
+    </Route>
   </Routes>
 );
 

@@ -1,64 +1,4 @@
-// import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-// import Login from "./pages/auth/Login";
-// import Signup from "./pages/auth/Signup";
-// import AdminDashboard from "./pages/admin/AdminDashboard";
-// import TeacherDashboard from "./pages/teacher/TeacherDashboard";
-// import StudentDashboard from "./pages/student/StudentDashboard";
-// import ParentDashboard from "./pages/parent/ParentDashboard";
-// import AccountantDashboard from "./pages/accountant/AccountantDashboard";
-// import ProtectedRoute from "./components/common/ProtectedRoute";
-// import { ToastContainer } from "react-toastify";
-// import "react-toastify/dist/ReactToastify.css";
-// import EditStudent from "./pages/admin/EditStudent";
 
-
-
-// function App() {
-//   return (
-    
-//     <Router>
-//       <ToastContainer position="top-right" />
-//       <Routes>
-//         <Route path="/" element={<Navigate to="/login" />} />
-//         <Route path="/login" element={<Login />} />
-//         <Route path="/signup" element={<Signup />} />
-       
-// <Route path="/admin" element={
-//   <ProtectedRoute>
-//     <AdminDashboard />
-//   </ProtectedRoute>
-// } />
-
-// <Route path="/teacher" element={
-//   <ProtectedRoute>
-//     <TeacherDashboard />
-//   </ProtectedRoute>
-// } />
-
-// <Route path="/student" element={
-//   <ProtectedRoute>
-//     <StudentDashboard />
-//   </ProtectedRoute>
-// } />
-
-// <Route path="/parent" element={
-//   <ProtectedRoute>
-//     <ParentDashboard />
-//   </ProtectedRoute>
-// } />
-
-// <Route path="/accountant" element={
-//   <ProtectedRoute>
-//     <AccountantDashboard />
-//   </ProtectedRoute>
-// } />
-//         <Route path="/admin/*" element={<AdminRoutes />} /> 
-//       </Routes>
-//     </Router>
-//   );
-// }
-
-// export default App;
 
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
@@ -78,6 +18,7 @@ import AccountantRoutes from './routes/AccountantRoutes';
 import Login from './pages/Login';
 import NotFound from './pages/NotFound';
 import Unauthorized from './pages/Unauthorized';
+import ParentLogin from './pages/Parent/ParentLogin';
 
 const App = () => {
   const { token, user } = useSelector((state) => state.auth);
@@ -87,6 +28,7 @@ const App = () => {
       <Routes>
         {/* 🟢 Login Route */}
         <Route path="/" element={<Login />} />
+        <Route path='/parent-login' element={<ParentLogin/>} />
 
         {/* 🔐 Admin Routes */}
         <Route element={<ProtectedRoute allowedRoles={['admin']} />}>

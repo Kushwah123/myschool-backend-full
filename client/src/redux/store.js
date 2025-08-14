@@ -12,6 +12,7 @@ import accountantReducer from './slices/accountantSlice';
 import classReducer from './slices/classSlice'; // ✅ Add this
 import homeworkReducer from './slices/homeworkSlice';
 import subjectReducer from './slices/subjectSlice';
+import villageReducer from './slices/villageSlice';
 
 const store = configureStore({
   reducer: {
@@ -26,6 +27,7 @@ const store = configureStore({
     class: classReducer,
     homework: homeworkReducer,
     subject: subjectReducer,
+    village: villageReducer,
   },
 });
 

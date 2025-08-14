@@ -2,36 +2,75 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-const API = process.env.REACT_APP_API_URL
-export const loginUser = createAsyncThunk('auth/loginUser', async (credentials) => {
-  const res = await axios.post(`${API}api/auth/login`, credentials);
-  return res.data;
-});
+const API = process.env.NODE_ENV === "development"
+  ? "http://localhost:5000/"
+  : process.env.REACT_APP_API_URL;
+
+// 🧠 Restore state from localStorage if available
+const userFromStorage = localStorage.getItem('user')
+  ? JSON.parse(localStorage.getItem('user'))
+  : null;
+
+const tokenFromStorage = localStorage.getItem('token')
+  ? localStorage.getItem('token')
+  : null;
+
+const roleFromStorage = localStorage.getItem('role')
+  ? localStorage.getItem('role')
+  : null;
+
+// 👤 Login User
+export const loginUser = createAsyncThunk(
+  'auth/loginUser',
+  async (credentials, { rejectWithValue }) => {
+    try {
+      const res = await axios.post(`${API}api/auth/login`, credentials);
+      const { user, token, role } = res.data;
+
+      // ✅ Save to localStorage
+      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('token', token);
+      localStorage.setItem('role', role);
+
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || 'Login failed');
+    }
+  }
+);
+
+// 👨‍👩‍👧 Parent Login
 export const parentLogin = createAsyncThunk(
   'auth/parentLogin',
   async ({ email, password }, { rejectWithValue }) => {
     try {
       const res = await axios.post(`${API}api/parents/login`, { email, password });
-      localStorage.setItem('userInfo', JSON.stringify(res.data));
+      const { user, token, role } = res.data;
+
+      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('token', token);
+      localStorage.setItem('role', role);
+
       return res.data;
     } catch (err) {
-      return rejectWithValue(err.response.data.message || 'Login failed');
+      return rejectWithValue(err.response?.data?.message || 'Login failed');
     }
   }
 );
 
-// 🔒 Logout
+// 🔒 Logout User
 export const logoutUser = createAsyncThunk('auth/logoutUser', async () => {
+  localStorage.removeItem('user');
   localStorage.removeItem('token');
+  localStorage.removeItem('role');
 });
-
 
 const authSlice = createSlice({
   name: 'auth',
   initialState: {
-    user: null,
-    token: null,
-    role: null,
+    user: userFromStorage,
+    token: tokenFromStorage,
+    role: roleFromStorage,
     loading: false,
     error: null,
   },
@@ -40,10 +79,14 @@ const authSlice = createSlice({
       state.user = null;
       state.token = null;
       state.role = null;
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
+      localStorage.removeItem('role');
     },
   },
   extraReducers: (builder) => {
     builder
+      // loginUser
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -56,7 +99,30 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload;
+      })
+
+      // parentLogin
+      .addCase(parentLogin.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(parentLogin.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+        state.role = action.payload.role;
+      })
+      .addCase(parentLogin.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // logoutUser
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.user = null;
+        state.token = null;
+        state.role = null;
       });
   },
 });

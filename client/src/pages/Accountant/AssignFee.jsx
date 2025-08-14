@@ -16,7 +16,7 @@ const AssignFee = () => {
   const { classes } = useSelector((state) => state.class);
   const { students } = useSelector((state) => state.student);
   const { feeStructures, loading } = useSelector((state) => state.fee);
-
+console.log(classes, students, feeStructures)
   useEffect(() => {
     dispatch(fetchClasses());
     dispatch(fetchStudents());

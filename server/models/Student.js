@@ -15,10 +15,15 @@ const studentSchema = new mongoose.Schema({
   admissionNumber: { type: String, required: true, unique: true },
   rollNumber: { type: String, required: true },
   classId: { type: mongoose.Schema.Types.ObjectId, ref: 'Class', required: true },
+  parentId: {type: mongoose.Schema.Types.ObjectId, ref: "Parent"},
   sectionId: String,
   transportMode: String,
   password: { type: String, required: true },
-  registrationDate: { type: Date, default: Date.now }
+  registrationDate: { type: Date, default: Date.now },
+  villageId: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: 'Village'
+}
 });
 
 module.exports = mongoose.model('Student', studentSchema);

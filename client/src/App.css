@@ -5,13 +5,36 @@ form label {
   font-weight: 500;
 }
 
-.card {
-  border-radius: 1rem;
-}
-form label {
-  font-weight: 500;
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
 }
 
-.card {
-  border-radius: 1rem;
+.dashboard-container {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
 }
+
+/* src/styles/Header.css */
+.navbar-brand {
+  font-size: 1.2rem;
+}
+
+@media (max-width: 576px) {
+  .navbar-brand {
+    font-size: 1rem;
+  }
+
+  .navbar .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  .navbar-text {
+    font-size: 0.85rem;
+  }
+}
+
+

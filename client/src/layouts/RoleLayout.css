@@ -1,0 +1,52 @@
+.layout-container {
+  display: flex;
+}
+
+/* Sidebar */
+.sidebar-wrapper {
+   position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100vh;
+  background-color: #343a40;
+  color: #fff;
+  overflow-y: auto;
+  z-index: 1050;
+  transform: translateX(0); /* Always visible by default */
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Show sidebar when toggled */
+.sidebar-wrapper.open {
+  transform: translateX(0);
+}
+
+/* Main content */
+.main-content {
+  flex: 1;
+  margin-left: 250px;
+  transition: margin-left 0.3s ease-in-out;
+}
+
+/* Hide sidebar on mobile */
+@media (max-width: 768px) {
+  .sidebar-wrapper {
+    transform: translateX(-100%);
+  }
+
+  .sidebar-wrapper.open {
+    transform: translateX(0);
+  }
+
+  .main-content {
+    margin-left: 0;
+  }
+}
+
+.toggle-btn {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 1060;
+}

@@ -1,82 +1,128 @@
-// const bcrypt = require('bcryptjs');
-// const User = require('../models/User');
-// const Parent = require('../models/Parent');
-// const Student = require('../models/Student');
 
-// exports.registerParent = async (req, res) => {
-//   try {
-//     const { name, email, children } = req.body;
-//     const password = await bcrypt.hash("parent123", 10);
-
-//     const user = await User.create({ name, email, password, role: "parent" });
-
-//     const parent = await Parent.create({ user: user._id, children });
-
-//     // Update student records with parent ref
-//     if (children && children.length > 0) {
-//       await Student.updateMany(
-//         { _id: { $in: children } },
-//         { $set: { parent: parent._id } }
-//       );
-//     }
-
-//     res.status(201).json({ message: "Parent registered", parent });
-//   } catch (error) {
-//     res.status(400).json({ error: error.message });
-//   }
-// };
-
-// exports.getParentDetails = async (req, res) => {
-//   try {
-//     const parent = await Parent.findOne({ user: req.user._id }).populate({
-//       path: 'children',
-//       populate: { path: 'user classId' }
-//     });
-
-//     res.json(parent);
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// };
 
 
 const Parent = require('../models/Parent');
+const User = require('../models/User');
+const Student = require('../models/Student');
+const bcrypt = require('bcryptjs');
+
+
+// ✅ Generate JWT Token
+const generateToken = (parent) => {
+  return jwt.sign(
+    { id: parent._id, role: "parent" },
+    process.env.JWT_SECRET,
+    { expiresIn: "7d" }
+  );
+};
 
 // ➕ Add Parent
 exports.addParent = async (req, res) => {
 
-  try {
-    const { name, email,password, children } = req.body;
-    // const password = await bcrypt.hash(password, 10);
+    try {
+    const { fullName,  mobile, villageId, studentIds,address } = req.body;
+     console.log(req.body)
+    const password = "parent123"; // ✅ Default password
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = await User.create({ name, email, password, role: "parent" });
-
-    const parent = await Parent.create({ user: user._id, children });
-
-    // Update student records with parent ref
-    if (children && children.length > 0) {
-      await Student.updateMany(
-        { _id: { $in: children } },
-         { $set: { parent: parent._id } }
-);
+        // Check if mobile already exists in User collection
+    const existingUser = await Parent.findOne({ mobile });
+    if (existingUser) {
+      return res.status(400).json({ error: "Mobile number already registered." });
     }
 
-    res.status(201).json({ message: "Parent registered", parent });
+
+    // ✅ Create user for login
+    const user = await User.create({
+      name:fullName,
+       mobile,
+      password: hashedPassword,
+      role: "parent",
+    });
+
+    // ✅ Create parent record
+    const parent = await Parent.create({
+      // user: user._id,
+      fullName,
+      mobile,
+      villageId,
+      studentIds,
+      address ,
+      password, // store plain password if needed (NOT RECOMMENDED for prod)
+      role: "parent",
+    });
+
+    // ✅ Link students to parent
+    await Student.updateMany(
+      { _id: { $in: studentIds } },
+      { $set: { parentId: parent._id } }
+    );
+
+    res.status(201).json({ message: "Parent registered successfully", parent });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
  };
 
+ // ✅ Login Parent
+exports.loginParent = async (req, res) => {
+  const { email, password } = req.body;
 
-// 📄 Get All Parents
-exports.getAllParents = async (req, res) => {
   try {
-    const parents = await Parent.find().populate('student');
-    res.status(200).json(parents);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    const parent = await Parent.findOne({ email });
+    if (!parent) return res.status(404).json({ message: "Parent not found" });
+
+    const isMatch = await bcrypt.compare(password, parent.password);
+    if (!isMatch) return res.status(401).json({ message: "Invalid credentials" });
+
+    const token = generateToken(parent);
+
+    res.json({
+      token,
+      user: {
+        id: parent._id,
+        name: parent.fullName,
+        email: parent.email,
+        role: "parent"
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Login failed", error: error.message });
   }
 };
+
+
+// 📄 Get All Parents
+
+// controllers/parentController.js
+
+exports.getAllParents = async (req, res) => {
+  try {
+    const parents = await Parent.find()
+      .populate("villageId", "villageName") // सिर्फ villageName field लाएगा
+  .populate({
+    path: "studentIds", // student ka data
+    select: "fullName rollNumber classId",
+    populate: {
+      path: "classId", // class ka naam laane ke liye
+      select: "className"
+    }
+  })
+
+    res.status(200).json(
+       parents
+    );
+  } catch (error) {
+    console.error("Error fetching parents:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching parents",
+      error: error.message
+    });
+  }
+};
+
+
 
 // 🔍 Get Single Parent by ID
 exports.getParentById = async (req, res) => {

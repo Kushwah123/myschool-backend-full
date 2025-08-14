@@ -1,10 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-const API = process.env.REACT_APP_API_URL
+const API = process.env.NODE_ENV === "development"
+    ? "http://localhost:5000/" // ✅ Localhost
+    : process.env.REACT_APP_API_URL; // ✅ Render or production 
 // 📌 GET: Fetch all parents (with pagination & search)
 export const fetchParents = createAsyncThunk("parents/fetchAll", async (query = "", thunkAPI) => {
   try {
-    const { data } = await axios.get(`${API}api/parents${query}`);
+    const { data } = await axios.get(`${API}api/parents`);
     return data;
   } catch (err) {
     return thunkAPI.rejectWithValue(err.response?.data?.message || "Failed to fetch parents");
@@ -62,11 +64,19 @@ const parentSlice = createSlice({
       .addCase(fetchParents.pending, (state) => {
         state.loading = true;
       })
-      .addCase(fetchParents.fulfilled, (state, action) => {
-        state.loading = false;
-        state.parents = action.payload.parents || [];
-        state.total = action.payload.total || 0;
-      })
+.addCase(fetchParents.fulfilled, (state, action) => {
+  console.log("Payload:", action.payload);  // Debug yaha karo
+  state.loading = false;
+
+  if (Array.isArray(action.payload)) {
+    state.parents = action.payload;
+    state.total = action.payload.length;
+  } else {
+    state.parents = action.payload.parents || [];
+    state.total = action.payload.total || 0;
+  }
+})
+
       .addCase(fetchParents.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;

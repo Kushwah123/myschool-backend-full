@@ -6,7 +6,6 @@ import { toast } from 'react-toastify';
 const StaffRegistration = () => {
   const [formData, setFormData] = useState({
     name: '',
-    email: '',
     password: '',
     mobile: '',
     role: '',
@@ -26,7 +25,7 @@ const StaffRegistration = () => {
     try {
       const res = await axios.post(`/api/auth/signup`, formData);
       toast.success(`${formData.role.toUpperCase()} registered successfully`);
-      setFormData({ name: '', email: '', password: '', mobile: '', role: '' });
+      setFormData({ name: '', password: '', mobile: '', role: '' });
     } catch (err) {
       toast.error(err.response?.data?.message || "Registration failed");
     }
@@ -53,12 +52,7 @@ const StaffRegistration = () => {
           </Row>
 
           <Row className="mb-3">
-            <Col md={6}>
-              <Form.Group>
-                <Form.Label>Email</Form.Label>
-                <Form.Control type="email" name="email" value={formData.email} onChange={handleChange} required />
-              </Form.Group>
-            </Col>
+
             <Col md={6}>
               <Form.Group>
                 <Form.Label>Password</Form.Label>

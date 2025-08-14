@@ -1,4 +1,5 @@
 import React from 'react';
+import AdminLayout from '../layouts/AdminLayout';
 import { Routes, Route } from 'react-router-dom';
 import Dashboard from '../pages/Admin/Dashboard';
 import AddStudent from '../pages/Admin/AddStudent';
@@ -13,11 +14,16 @@ import Reports from '../pages/Admin/Reports';
 import AllParents from "../pages/Admin/AllParents";
 import AddParent from "../pages/Admin/AddParent";
 import StaffRegistration from '../pages/Admin/StaffRegistration';
+import VillageManager from '../components/VillageManager';
+import FeeHistory from '../pages/Accountant/FeeHistory';
+import FeeCollection from '../pages/Accountant/FeeCollection';
+import Subject from '../pages/Admin/Subject';
 
 
 const AdminRoutes = () => {
   return (
     <Routes>
+      <Route path="/" element={<AdminLayout />}>
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/add-student" element={<AddStudent />} />
       <Route path="/all-students" element={<AllStudents />} />
@@ -28,10 +34,16 @@ const AdminRoutes = () => {
       <Route path="/fee-structure" element={<FeeStructure />} />
       <Route path="/assign-fee" element={<AssignFee />} />
       <Route path="/add-parent" element={<AddParent />} />
-<Route path="/edit-parent/:id" element={<AddParent />} />
-<Route path="/all-parents" element={<AllParents />} />
-<Route path="/staff-registration" element={<StaffRegistration />} />
+      <Route path="/edit-parent/:id" element={<AddParent />} />
+      <Route path="/all-parents" element={<AllParents />} />
+      <Route path="/staff-registration" element={<StaffRegistration />} />
+      <Route path='/villages' element={<VillageManager/>}/>
+      <Route path='/fee-History' element={<FeeHistory />} />
+      <Route path="/collect-fee" element={<FeeCollection />}  />
+      <Route path='/subject' element={<Subject />} />
       {/* <Route path="/reports" element={<Reports />} /> */}
+      </Route>
+
     </Routes>
   );
 };

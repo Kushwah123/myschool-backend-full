@@ -1,12 +1,47 @@
+/* sidebar.css */
+
 .sidebar {
-  background-color: #212529;
-  height: 100%;
+  width: 250px;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  background-color: #343a40; /* Bootstrap dark */
+  overflow-y: auto;
+  border-right: 1px solid #444;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+  z-index: 1000;
 }
-.sidebar .nav-link {
+
+.sidebar h5 {
+  font-weight: bold;
+  color: #ffc107; /* Bootstrap warning */
+}
+
+.nav-link {
   padding: 10px 15px;
-  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  transition: all 0.3s ease;
 }
-.sidebar .nav-link:hover {
-  background-color: #343a40;
-  color: #ffc107;
+
+.nav-link:hover {
+  background-color: #495057;
+  color: #ffc107 !important;
+}
+
+.nav-link .me-2 {
+  margin-right: 10px;
+}
+
+hr {
+  border-top: 1px solid #555;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+  }
 }

@@ -10,7 +10,7 @@ import * as XLSX from 'xlsx';
 const AllTeachers = () => {
   const dispatch = useDispatch();
   const { teachers, loading } = useSelector((state) => state.teachers);
-
+console.log("Teachers", teachers);
   const [search, setSearch] = useState('');
   const componentRef = React.useRef();
 
@@ -79,7 +79,7 @@ const AllTeachers = () => {
               {filteredTeachers.map((teacher, index) => (
                 <tr key={teacher._id}>
                   <td>{index + 1}</td>
-                  <td>{teacher.fullName}</td>
+                  <td>{teacher.name}</td>
                   <td>{teacher.email}</td>
                   <td>{teacher.mobile}</td>
                   <td>{teacher.gender}</td>
