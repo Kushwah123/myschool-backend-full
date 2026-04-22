@@ -1,7 +1,7 @@
-import Village from '../models/Village.js';
+const Village = require('../models/Village');
 
 // Create
-export const addVillage = async (req, res) => {
+exports.addVillage = async (req, res) => {
   try {
     const { villageName } = req.body;
     const existing = await Village.findOne({ villageName });
@@ -17,7 +17,7 @@ export const addVillage = async (req, res) => {
 };
 
 // Read
-export const getVillages = async (req, res) => {
+exports.getVillages = async (req, res) => {
   try {
     const villages = await Village.find();
     res.json(villages);
@@ -27,7 +27,7 @@ export const getVillages = async (req, res) => {
 };
 
 // Update
-export const updateVillage = async (req, res) => {
+exports.updateVillage = async (req, res) => {
   try {
     const { id } = req.params;
     const { villageName } = req.body;
@@ -45,7 +45,7 @@ export const updateVillage = async (req, res) => {
 };
 
 // Delete
-export const deleteVillage = async (req, res) => {
+exports.deleteVillage = async (req, res) => {
   try {
     const { id } = req.params;
     await Village.findByIdAndDelete(id);

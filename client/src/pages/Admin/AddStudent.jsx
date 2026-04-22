@@ -161,10 +161,10 @@ const AddStudent = () => {
           </Row>
 
           <Row className="mb-3">
-            <Col md={6}><Form.Group><Form.Label>Father's Name</Form.Label>
-              <Form.Control name="fatherName" onChange={handleChange} /></Form.Group></Col>
-            <Col md={6}><Form.Group><Form.Label>Mother's Name</Form.Label>
-              <Form.Control name="motherName" onChange={handleChange} /></Form.Group></Col>
+            <Col md={6}><Form.Group><Form.Label>Father's Name *</Form.Label>
+              <Form.Control required name="fatherName" onChange={handleChange} /></Form.Group></Col>
+            <Col md={6}><Form.Group><Form.Label>Mother's Name *</Form.Label>
+              <Form.Control required name="motherName" onChange={handleChange} /></Form.Group></Col>
           </Row>
 
           <Row className="mb-3">

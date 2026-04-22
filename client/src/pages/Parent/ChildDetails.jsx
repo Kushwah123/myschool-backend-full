@@ -13,23 +13,32 @@ const ChildDetails = () => {
       <Card className="p-4 shadow">
         <h4>👧 Child Details</h4>
         <Row className="mt-3">
-          <Col md={6}><strong>Name:</strong> {child?.fullName}</Col>
-          <Col md={6}><strong>Admission No:</strong> {child?.admissionNumber}</Col>
+          <Col md={6}><strong>Name:</strong> {child?.fullName || '-'}</Col>
+          <Col md={6}><strong>Admission No:</strong> {child?.admissionNumber || '-'}</Col>
         </Row>
         <Row className="mt-2">
-          <Col md={6}><strong>Class:</strong> {child?.classId?.name}</Col>
-          <Col md={6}><strong>Roll No:</strong> {child?.rollNumber}</Col>
+          <Col md={6}><strong>Class:</strong> {child?.classId?.name || '-'}</Col>
+          <Col md={6}><strong>Roll No:</strong> {child?.rollNumber || '-'}</Col>
         </Row>
         <Row className="mt-2">
-          <Col md={6}><strong>DOB:</strong> {child?.dob}</Col>
-          <Col md={6}><strong>Gender:</strong> {child?.gender}</Col>
+          <Col md={6}><strong>DOB:</strong> {child?.dob ? new Date(child.dob).toLocaleDateString() : '-'}</Col>
+          <Col md={6}><strong>Gender:</strong> {child?.gender || '-'}</Col>
         </Row>
         <Row className="mt-2">
-          <Col md={6}><strong>Transport Mode:</strong> {child?.transportMode}</Col>
-          <Col md={6}><strong>Mobile:</strong> {child?.mobile}</Col>
+          <Col md={6}><strong>Father's Name:</strong> {child?.fatherName || '-'}</Col>
+          <Col md={6}><strong>Mother's Name:</strong> {child?.motherName || '-'}</Col>
         </Row>
         <Row className="mt-2">
-          <Col md={12}><strong>Address:</strong> {child?.address}</Col>
+          <Col md={6}><strong>Mobile:</strong> {child?.mobile || '-'}</Col>
+          <Col md={6}><strong>Address:</strong> {child?.address || '-'}</Col>
+        </Row>
+        <Row className="mt-2">
+          <Col md={6}><strong>Blood Group:</strong> {child?.bloodGroup || '-'}</Col>
+          <Col md={6}><strong>Category:</strong> {child?.category || '-'}</Col>
+        </Row>
+        <Row className="mt-2">
+          <Col md={6}><strong>Transport Mode:</strong> {child?.transportMode || '-'}</Col>
+          <Col md={6}><strong>Aadhaar:</strong> {child?.aadharNumber || '-'}</Col>
         </Row>
       </Card>
     </Container>

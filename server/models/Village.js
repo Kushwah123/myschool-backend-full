@@ -1,16 +1,19 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
-const villageSchema = new mongoose.Schema({
-  villageName: {
-    type: String,
-    required: true,
-    unique: true,
+const villageSchema = new mongoose.Schema(
+  {
+    villageName: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    villageCode: {
+      type: String,
+      required: true,
+      unique: true,
+    },
   },
-  villageCode: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-}, { timestamps: true });
+  { timestamps: true }
+);
 
-export default mongoose.model('Village', villageSchema);
+module.exports = mongoose.model('Village', villageSchema);

@@ -9,9 +9,10 @@ const teacherSchema = new mongoose.Schema({
 
   email: {
     type: String,
-    required: true,
     unique: true,
+    sparse: true,
     lowercase: true,
+    trim: true,
   },
 
   password: {
@@ -31,6 +32,10 @@ const teacherSchema = new mongoose.Schema({
   subjectSpecialization: {
     type: String,
   },
+  // teacher may handle multiple classes and subjects
+  assignedClasses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Class' }],
+  classIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Class' }],
+  subjects: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Subject' }],
 
   gender: {
     type: String,
@@ -43,6 +48,11 @@ const teacherSchema = new mongoose.Schema({
 
   address: {
     type: String,
+  },
+
+  experience: {
+    type: Number,
+    default: 0,
   },
 
   role: {

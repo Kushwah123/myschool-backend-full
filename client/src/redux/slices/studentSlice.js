@@ -1,18 +1,18 @@
 // redux/slices/studentSlice.js
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import axios from '../../axiosInstance';
 
 
 const API = process.env.NODE_ENV === "development"
-    ? "http://localhost:5000/" // ✅ Localhost
+    ? "" // ✅ Use relative path with axiosInstance
     : process.env.REACT_APP_API_URL; // ✅ Render or production 
 // ✅ Fetch all students
 export const fetchStudents = createAsyncThunk(
   'students/fetchStudents',
   async (_, { rejectWithValue }) => {
     try {
-      const res = await axios.get(`${API}api/students`);
+      const res = await axios.get(`${API}/students`);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -25,11 +25,27 @@ export const createStudent = createAsyncThunk(
   'students/createStudent',
   async (studentData, { rejectWithValue }) => {
     try {
-      const res = await axios.post(`${API}api/students`, studentData);
+      const res = await axios.post(`${API}/students`, studentData);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
     }
+  }
+);
+
+// Upload Excel file
+export const importStudents = createAsyncThunk(
+  "students/import",
+  async ({ file, classId }) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    if (classId) formData.append("classId", classId);
+
+    const res = await axios.post(`${API}/students/import`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    return res.data;
   }
 );
 
@@ -38,7 +54,7 @@ export const updateStudent = createAsyncThunk(
   'students/updateStudent',
   async ({ id, studentData }, { rejectWithValue }) => {
     try {
-      const res = await axios.put(`${API}api/students/${id}`, studentData);
+      const res = await axios.put(`${API}/students/${id}`, studentData);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -51,7 +67,7 @@ export const deleteStudent = createAsyncThunk(
   'students/deleteStudent',
   async (id, { rejectWithValue }) => {
     try {
-      await axios.delete(`${API}api/students/${id}`);
+      await axios.delete(`${API}/students/${id}`);
       return id;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -62,7 +78,7 @@ export const deleteMultipleStudents = createAsyncThunk(
   'students/deleteMultiple',
   async (ids, { rejectWithValue }) => {
     try {
-      const res = await axios.post(`${API}/api/students/delete-multiple`, { ids });
+      const res = await axios.post(`${API}/students/delete-multiple`, { ids });
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -75,7 +91,7 @@ export const fetchStudentsByClass = createAsyncThunk(
   'students/fetchStudentsByClass',
   async (classId, { rejectWithValue }) => {
     try {
-      const res = await axios.get(`${API}api/students/class/${classId}`);
+      const res = await axios.get(`${API}/students/class/${classId}`);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -86,7 +102,7 @@ export const fetchStudentByParent = createAsyncThunk(
   'students/fetchStudentByParent',
   async (parentId, { rejectWithValue }) => {
     try {
-      const res = await axios.get(`${API}api/students/parent/${parentId}`);
+      const res = await axios.get(`${API}/students/parent/${parentId}`);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -121,6 +137,18 @@ const studentSlice = createSlice({
         state.error = action.payload;
         state.status = 'failed';
       })
+            .addCase(importStudents.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(importStudents.fulfilled, (state, action) => {
+        state.loading = false;
+        state.message = action.payload.message;
+      })
+      .addCase(importStudents.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      })
+
       .addCase(updateStudent.fulfilled, (state, action) => {
         const index = state.students.findIndex(s => s._id === action.payload._id);
         if (index !== -1) state.students[index] = action.payload;

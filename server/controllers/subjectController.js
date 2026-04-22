@@ -1,13 +1,81 @@
 const Subject = require('../models/subjectModel');
+const Class = require('../models/Class');
 
 // ➕ Create Subject
 exports.createSubject = async (req, res) => {
   try {
-    const subject = new Subject(req.body);
+    const { name, classId, code, assignedTeacher } = req.body;
+
+    if (!name || !classId) {
+      return res.status(400).json({ error: 'name and classId are required' });
+    }
+
+    const classObj = await Class.findById(classId);
+    if (!classObj) {
+      return res.status(404).json({ error: 'Class not found' });
+    }
+
+    let normalizedCode = code?.trim();
+    if (!normalizedCode) {
+      normalizedCode = name.match(/\b\w/g)?.join('').toUpperCase().slice(0, 4) || name.toUpperCase().slice(0, 4);
+    }
+
+    const existingCode = await Subject.findOne({ code: normalizedCode });
+    if (existingCode) {
+      normalizedCode = `${normalizedCode}-${Date.now().toString().slice(-4)}`;
+    }
+
+    const subject = new Subject({ name, classId, code: normalizedCode, assignedTeacher });
     await subject.save();
+
+    if (!classObj.subjects) classObj.subjects = [];
+    if (!classObj.subjects.includes(subject._id)) {
+      classObj.subjects.push(subject._id);
+      await classObj.save();
+    }
+
     res.status(201).json({ message: 'Subject created successfully', subject });
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+};
+
+// ➕ Add Subject (admin)
+exports.addSubject = async (req, res) => {
+  try {
+    const { name, classId, code, assignedTeacher } = req.body;
+
+    if (!name || !classId) {
+      return res.status(400).json({ error: 'name and classId are required' });
+    }
+
+    const classObj = await Class.findById(classId);
+    if (!classObj) {
+      return res.status(404).json({ error: 'Class not found' });
+    }
+
+    let normalizedCode = code?.trim();
+    if (!normalizedCode) {
+      normalizedCode = name.match(/\b\w/g)?.join('').toUpperCase().slice(0, 4) || name.toUpperCase().slice(0, 4);
+    }
+
+    const existingCode = await Subject.findOne({ code: normalizedCode });
+    if (existingCode) {
+      normalizedCode = `${normalizedCode}-${Date.now().toString().slice(-4)}`;
+    }
+
+    const subject = new Subject({ name, classId, code: normalizedCode, assignedTeacher });
+    await subject.save();
+
+    if (!classObj.subjects) classObj.subjects = [];
+    if (!classObj.subjects.includes(subject._id)) {
+      classObj.subjects.push(subject._id);
+      await classObj.save();
+    }
+
+    return res.status(201).json({ message: 'Subject created successfully', subject });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
   }
 };
 

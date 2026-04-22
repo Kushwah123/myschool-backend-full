@@ -6,7 +6,6 @@ import {
   deleteMultipleStudents,
 } from '../../redux/slices/studentSlice';
 import { fetchClasses } from '../../redux/slices/classSlice';
-import { fetchVillages } from '../../redux/slices/villageSlice';
 import { Table, Form, Button, Pagination, Card, Row, Col } from 'react-bootstrap';
 import { useReactToPrint } from 'react-to-print';
 import { useNavigate } from 'react-router-dom';
@@ -18,11 +17,10 @@ const AllStudents = () => {
   const navigate = useNavigate();
   const { students = [] } = useSelector((state) => state.students);
   const { classes = [] } = useSelector((state) => state.class);
-  const { list: villages = [] } = useSelector((state) => state.village);
 
   const [search, setSearch] = useState('');
   const [filterClass, setFilterClass] = useState('');
-  const [filterVillage, setFilterVillage] = useState('');
+  const [filterAddress, setFilterAddress] = useState('');
   const [selectedIds, setSelectedIds] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -31,15 +29,18 @@ const AllStudents = () => {
   useEffect(() => {
     dispatch(fetchStudents());
     dispatch(fetchClasses());
-    dispatch(fetchVillages());
   }, [dispatch]);
 
   const filteredStudents = students.filter(
     (s) =>
       (!filterClass || s.classId?._id === filterClass) &&
-      (!filterVillage || s.villageId?._id === filterVillage) &&
+      (!filterAddress || s.address?.toLowerCase() === filterAddress.toLowerCase()) &&
       (s.fullName?.toLowerCase().includes(search.toLowerCase()) ||
-        s.rollNumber?.toString().includes(search))
+        s.fatherName?.toLowerCase().includes(search.toLowerCase()) ||
+        s.motherName?.toLowerCase().includes(search.toLowerCase()) ||
+        s.rollNumber?.toString().includes(search) ||
+        s.mobile?.includes(search) ||
+        s.address?.toLowerCase().includes(search.toLowerCase()))
   );
 
   const totalPages = Math.ceil(filteredStudents.length / itemsPerPage);
@@ -54,11 +55,17 @@ const AllStudents = () => {
     const worksheet = XLSX.utils.json_to_sheet(
       filteredStudents.map((s) => ({
         Name: s.fullName,
+        "Father's Name": s.fatherName,
+        "Mother's Name": s.motherName,
         Roll: s.rollNumber,
         Class: s.classId?.name,
-        Village: s.villageId?.villageName,
-        Aadhaar: s.aadharNumber,
+        Address: s.address,
+        DOB: s.dob ? new Date(s.dob).toLocaleDateString() : '',
         Mobile: s.mobile,
+        Aadhaar: s.aadharNumber,
+        Gender: s.gender,
+        "Blood Group": s.bloodGroup,
+        Category: s.category,
       }))
     );
     const wb = XLSX.utils.book_new();
@@ -123,11 +130,11 @@ const AllStudents = () => {
             </Col>
 
             <Col md={3}>
-              <Form.Select value={filterVillage} onChange={(e) => setFilterVillage(e.target.value)}>
-                <option value="">🏘️ All Villages</option>
-                {villages.map((v) => (
-                  <option key={v._id} value={v._id}>
-                    {v.villageName}
+              <Form.Select value={filterAddress} onChange={(e) => setFilterAddress(e.target.value)}>
+                <option value="">📍 All Addresses</option>
+                {[...new Set(students.map((student) => student.address).filter(Boolean))].map((address) => (
+                  <option key={address} value={address}>
+                    {address}
                   </option>
                 ))}
               </Form.Select>
@@ -164,10 +171,13 @@ const AllStudents = () => {
                   <th>Select</th>
                   <th>Roll No</th>
                   <th>Name</th>
-                  <th>Class</th>
-                  <th>Village</th>
-                  <th>Aadhaar</th>
+                  <th>Father</th>
+                  <th>Mother</th>
+                  <th>DOB</th>
                   <th>Mobile</th>
+                  <th>Address</th>
+                  <th>Class</th>
+                  
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -183,10 +193,13 @@ const AllStudents = () => {
                     </td>
                     <td>{s.rollNumber}</td>
                     <td>{s.fullName}</td>
+                    <td>{s.fatherName || '-'}</td>
+                    <td>{s.motherName || '-'}</td>
+                    <td>{s.dob ? new Date(s.dob).toLocaleDateString() : '-'}</td>
+                    <td>{s.mobile || '-'}</td>
+                    <td>{s.address || '-'}</td>
                     <td>{s.classId?.name}</td>
-                    <td>{s.villageId?.villageName || '-'}</td>
-                    <td>{s.aadharNumber}</td>
-                    <td>{s.mobile}</td>
+                  
                     <td>
                       <Button
                         variant="info"

@@ -1,10 +1,10 @@
 // authSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import axios from '../../axiosInstance';
 
 const API = process.env.NODE_ENV === "development"
-  ? "http://localhost:5000/"
-  : process.env.REACT_APP_API_URL;
+  ? ""
+  : process.env.REACT_APP_API_URL || '';
 
 // 🧠 Restore state from localStorage if available
 const userFromStorage = localStorage.getItem('user')
@@ -24,8 +24,9 @@ export const loginUser = createAsyncThunk(
   'auth/loginUser',
   async (credentials, { rejectWithValue }) => {
     try {
-      const res = await axios.post(`${API}api/auth/login`, credentials);
-      const { user, token, role } = res.data;
+      const res = await axios.post(`${API}/auth/login`, credentials);
+      const { user, token } = res.data;
+      const role = user?.role;
 
       // ✅ Save to localStorage
       localStorage.setItem('user', JSON.stringify(user));
@@ -34,7 +35,7 @@ export const loginUser = createAsyncThunk(
 
       return res.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || 'Login failed');
+      return rejectWithValue(err.response?.data?.message || err.response?.data?.msg || 'Login failed');
     }
   }
 );
@@ -42,10 +43,11 @@ export const loginUser = createAsyncThunk(
 // 👨‍👩‍👧 Parent Login
 export const parentLogin = createAsyncThunk(
   'auth/parentLogin',
-  async ({ email, password }, { rejectWithValue }) => {
+  async ({ identifier, password }, { rejectWithValue }) => {
     try {
-      const res = await axios.post(`${API}api/parents/login`, { email, password });
-      const { user, token, role } = res.data;
+      const res = await axios.post(`${API}/parents/login`, { identifier, password });
+      const { user, token } = res.data;
+      const role = user?.role;
 
       localStorage.setItem('user', JSON.stringify(user));
       localStorage.setItem('token', token);
@@ -53,7 +55,7 @@ export const parentLogin = createAsyncThunk(
 
       return res.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || 'Login failed');
+      return rejectWithValue(err.response?.data?.message || err.response?.data?.msg || 'Login failed');
     }
   }
 );

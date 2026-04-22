@@ -1,32 +1,16 @@
 // redux/slices/marksSlice.js
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
-
-const API =  process.env.NODE_ENV === "development"
-    ? "http://localhost:5000/" // ✅ Localhost
-    : process.env.REACT_APP_API_URL; // ✅ Render or production 
+import axios from '../../axiosInstance';
 
 export const createMarks = createAsyncThunk(
   'marks/createMarks',
   async (data, { rejectWithValue }) => {
     try {
-      const res = await axios.post(`${API}/marks/add`, data);
-      return res.data;
+      const response = await axios.post('/marks', data);
+      return response.data;
     } catch (err) {
-      return rejectWithValue(err.response.data);
-    }
-  }
-);
-
-export const fetchMarks = createAsyncThunk(
-  'marks/fetchMarks',
-  async (_, { rejectWithValue }) => {
-    try {
-      const res = await axios.get(`${API}api/marks/fetchMarks`);
-      return res.data;
-    } catch (err) {
-      return rejectWithValue(err.response.data);
+      return rejectWithValue(err.response?.data?.error || err.response?.data || err.message);
     }
   }
 );
@@ -35,10 +19,46 @@ export const updateMarks = createAsyncThunk(
   'marks/updateMarks',
   async ({ id, updatedData }, { rejectWithValue }) => {
     try {
-      const res = await axios.put(`${API}api/marks/${id}`, updatedData);
-      return res.data;
+      const response = await axios.put(`/marks/${id}`, updatedData);
+      return response.data;
     } catch (err) {
-      return rejectWithValue(err.response.data);
+      return rejectWithValue(err.response?.data?.error || err.response?.data || err.message);
+    }
+  }
+);
+
+export const fetchMarksByStudent = createAsyncThunk(
+  'marks/fetchMarksByStudent',
+  async (studentId, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(`/marks/student/${studentId}`);
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.error || err.response?.data || err.message);
+    }
+  }
+);
+
+export const fetchMarksByClass = createAsyncThunk(
+  'marks/fetchMarksByClass',
+  async (classId, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(`/marks/class/${classId}`);
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.error || err.response?.data || err.message);
+    }
+  }
+);
+
+export const fetchStudentReport = createAsyncThunk(
+  'marks/fetchStudentReport',
+  async (studentId, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(`/marks/report/${studentId}`);
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.error || err.response?.data || err.message);
     }
   }
 );
@@ -47,31 +67,90 @@ const marksSlice = createSlice({
   name: 'marks',
   initialState: {
     marks: [],
+    report: null,
+    loading: false,
     status: null,
     error: null,
   },
   reducers: {},
-  extraReducers: builder => {
+  extraReducers: (builder) => {
     builder
-      .addCase(createMarks.pending, state => {
+      .addCase(createMarks.pending, (state) => {
+        state.loading = true;
         state.status = 'loading';
+        state.error = null;
       })
       .addCase(createMarks.fulfilled, (state, action) => {
-        state.marks.push(action.payload);
+        state.loading = false;
         state.status = 'success';
+        if (action.payload) state.marks.push(action.payload);
       })
       .addCase(createMarks.rejected, (state, action) => {
+        state.loading = false;
         state.status = 'failed';
-        state.error = action.payload;
+        state.error = action.payload || action.error.message;
       })
-      .addCase(fetchMarks.fulfilled, (state, action) => {
-        state.marks = action.payload;
-        state.status = 'success';
+      .addCase(updateMarks.pending, (state) => {
+        state.loading = true;
+        state.status = 'loading';
+        state.error = null;
       })
       .addCase(updateMarks.fulfilled, (state, action) => {
-        const index = state.marks.findIndex(m => m._id === action.payload._id);
-        if (index !== -1) state.marks[index] = action.payload;
+        state.loading = false;
         state.status = 'success';
+        const updatedMark = action.payload;
+        const index = state.marks.findIndex((m) => m._id === updatedMark?._id);
+        if (index !== -1) state.marks[index] = updatedMark;
+      })
+      .addCase(updateMarks.rejected, (state, action) => {
+        state.loading = false;
+        state.status = 'failed';
+        state.error = action.payload || action.error.message;
+      })
+      .addCase(fetchMarksByStudent.pending, (state) => {
+        state.loading = true;
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(fetchMarksByStudent.fulfilled, (state, action) => {
+        state.loading = false;
+        state.status = 'success';
+        state.marks = action.payload;
+      })
+      .addCase(fetchMarksByStudent.rejected, (state, action) => {
+        state.loading = false;
+        state.status = 'failed';
+        state.error = action.payload || action.error.message;
+      })
+      .addCase(fetchMarksByClass.pending, (state) => {
+        state.loading = true;
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(fetchMarksByClass.fulfilled, (state, action) => {
+        state.loading = false;
+        state.status = 'success';
+        state.marks = action.payload;
+      })
+      .addCase(fetchMarksByClass.rejected, (state, action) => {
+        state.loading = false;
+        state.status = 'failed';
+        state.error = action.payload || action.error.message;
+      })
+      .addCase(fetchStudentReport.pending, (state) => {
+        state.loading = true;
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(fetchStudentReport.fulfilled, (state, action) => {
+        state.loading = false;
+        state.status = 'success';
+        state.report = action.payload;
+      })
+      .addCase(fetchStudentReport.rejected, (state, action) => {
+        state.loading = false;
+        state.status = 'failed';
+        state.error = action.payload || action.error.message;
       });
   },
 });

@@ -7,19 +7,22 @@ import {
   updateSubject,
   deleteSubject,
 } from "../../redux/slices/subjectSlice";
+import { fetchClasses } from "../../redux/slices/classSlice";
 
 const Subject = () => {
   const dispatch = useDispatch();
   const { subjects, status, error } = useSelector((state) => state.subject);
-console.log(subjects
-)
+  const { classes } = useSelector((state) => state.class);
+
   const [showModal, setShowModal] = useState(false);
   const [subjectName, setSubjectName] = useState("");
+  const [subjectClassId, setSubjectClassId] = useState("");
   const [editId, setEditId] = useState(null);
   const [loadingAction, setLoadingAction] = useState(false);
 
   useEffect(() => {
     dispatch(fetchSubjects());
+    dispatch(fetchClasses());
   }, [dispatch]);
 
   const openModalForAdd = () => {
@@ -30,6 +33,7 @@ console.log(subjects
 
   const openModalForEdit = (subject) => {
     setSubjectName(subject.name);
+    setSubjectClassId(subject.classId?._id || subject.classId || "");
     setEditId(subject._id);
     setShowModal(true);
   };
@@ -37,19 +41,20 @@ console.log(subjects
   const closeModal = () => {
     setShowModal(false);
     setSubjectName("");
+    setSubjectClassId("");
     setEditId(null);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!subjectName.trim()) return;
+    if (!subjectName.trim() || !subjectClassId) return;
     setLoadingAction(true);
 
     try {
       if (editId) {
-        await dispatch(updateSubject({ id: editId, name: subjectName })).unwrap();
+        await dispatch(updateSubject({ id: editId, updates: { name: subjectName, classId: subjectClassId } })).unwrap();
       } else {
-        await dispatch(createSubject({ name: subjectName })).unwrap();
+        await dispatch(createSubject({ name: subjectName, classId: subjectClassId })).unwrap();
       }
       closeModal();
     } catch (err) {
@@ -95,39 +100,46 @@ console.log(subjects
             <tr>
               <th>#</th>
               <th>Subject Name</th>
+              <th>Class</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {subjects.length ? (
-              subjects.map((subj, i) => (
-                <tr key={subj._id}>
-                  <td>{i + 1}</td>
-                  <td>{subj.name}</td>
-                  <td>
-                    <Button
-                      variant="warning"
-                      size="sm"
-                      onClick={() => openModalForEdit(subj)}
-                      className="me-2"
-                      disabled={loadingAction}
-                    >
-                      ✏ Edit
-                    </Button>
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      disabled={loadingAction}
-                      onClick={() => handleDelete(subj._id)}
-                    >
-                      🗑 Delete
-                    </Button>
-                  </td>
-                </tr>
-              ))
+              subjects.map((subj, i) => {
+                const classIdValue = subj.classId?._id || subj.classId;
+                const classObj = classes.find((cls) => cls._id === classIdValue);
+                const className = classObj?.name || subj.classId?.name || (typeof subj.classId === 'string' ? subj.classId : 'Unknown');
+                return (
+                  <tr key={subj._id}>
+                    <td>{i + 1}</td>
+                    <td>{subj.name}</td>
+                    <td>{className}</td>
+                    <td>
+                      <Button
+                        variant="warning"
+                        size="sm"
+                        onClick={() => openModalForEdit(subj)}
+                        className="me-2"
+                        disabled={loadingAction}
+                      >
+                        ✏ Edit
+                      </Button>
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        disabled={loadingAction}
+                        onClick={() => handleDelete(subj._id)}
+                      >
+                        🗑 Delete
+                      </Button>
+                    </td>
+                  </tr>
+                );
+              })
             ) : (
               <tr>
-                <td colSpan={3} className="text-center">
+                <td colSpan={4} className="text-center">
                   No subjects found.
                 </td>
               </tr>
@@ -143,7 +155,7 @@ console.log(subjects
         </Modal.Header>
         <Form onSubmit={handleSubmit}>
           <Modal.Body>
-            <Form.Group controlId="subjectName">
+            <Form.Group controlId="subjectName" className="mb-3">
               <Form.Label>Subject Name</Form.Label>
               <Form.Control
                 type="text"
@@ -154,6 +166,22 @@ console.log(subjects
                 autoFocus
                 disabled={loadingAction}
               />
+            </Form.Group>
+            <Form.Group controlId="subjectClass" className="mb-3">
+              <Form.Label>Class</Form.Label>
+              <Form.Select
+                value={subjectClassId}
+                onChange={(e) => setSubjectClassId(e.target.value)}
+                required
+                disabled={loadingAction}
+              >
+                <option value="">Select class</option>
+                {classes.map((cls) => (
+                  <option key={cls._id} value={cls._id}>
+                    {`${cls.name} ${cls.section || ''}`}
+                  </option>
+                ))}
+              </Form.Select>
             </Form.Group>
           </Modal.Body>
           <Modal.Footer>

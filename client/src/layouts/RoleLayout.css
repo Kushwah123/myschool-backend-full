@@ -29,6 +29,13 @@
   transition: margin-left 0.3s ease-in-out;
 }
 
+/* Page content */
+.page-content {
+  padding: 20px;
+  min-height: calc(100vh - 76px); /* Account for header height */
+  overflow-y: auto;
+}
+
 /* Hide sidebar on mobile */
 @media (max-width: 768px) {
   .sidebar-wrapper {
@@ -42,11 +49,39 @@
   .main-content {
     margin-left: 0;
   }
+
+  /* Add backdrop when sidebar is open on mobile */
+  .sidebar-wrapper.open::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 250px;
+    width: calc(100vw - 250px);
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: -1;
+  }
+
+  .page-content {
+    padding-top: 100px; /* Extra padding for toggle button */
+  }
 }
 
 .toggle-btn {
   position: fixed;
-  top: 10px;
+  top: 70px; /* Position below the navbar */
   left: 10px;
   z-index: 1060;
+  background-color: #007bff;
+  border: none;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.toggle-btn:hover {
+  background-color: #0056b3;
 }

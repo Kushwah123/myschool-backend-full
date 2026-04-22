@@ -9,18 +9,23 @@ const multer = require("multer");
 
 
 // File Upload Config
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/students/");
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + "-" + file.originalname);
-  },
-});
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, "uploads/students/");
+//   },
+//   filename: function (req, file, cb) {
+//     cb(null, Date.now() + "-" + file.originalname);
+//   },
+// });
+
+const storage = multer.memoryStorage();
 const upload = multer({ storage });
+
+
 
 // 🔐 Optional: protect routes
 router.post('/', upload.single("photo"),studentController.addStudent);
+router.post("/import", upload.single("file"),studentController.importStudents);
 router.get('/', studentController.getAllStudents);
 router.get('/:id', studentController.getStudentById);
 router.put('/:id', studentController.updateStudent);

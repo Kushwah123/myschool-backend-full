@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Form, Button, Card, Container, Row, Col } from 'react-bootstrap';
-import axios from 'axios';
+import axios from '../../axiosInstance';
 import { toast } from 'react-toastify';
 
 const StaffRegistration = () => {
   const [formData, setFormData] = useState({
     name: '',
+    email: '',
     password: '',
     mobile: '',
     role: '',
@@ -23,11 +24,11 @@ const StaffRegistration = () => {
     if (!formData.role) return toast.warning("Please select a role");
 
     try {
-      const res = await axios.post(`/api/auth/signup`, formData);
+      const res = await axios.post('/auth/signup', formData);
       toast.success(`${formData.role.toUpperCase()} registered successfully`);
-      setFormData({ name: '', password: '', mobile: '', role: '' });
+      setFormData({ name: '', email: '', password: '', mobile: '', role: '' });
     } catch (err) {
-      toast.error(err.response?.data?.message || "Registration failed");
+      toast.error(err.response?.data?.msg || err.response?.data?.message || "Registration failed");
     }
   };
 
@@ -46,13 +47,18 @@ const StaffRegistration = () => {
             <Col md={6}>
               <Form.Group>
                 <Form.Label>Mobile</Form.Label>
-                <Form.Control name="mobile" value={formData.mobile} onChange={handleChange} maxLength="10" />
+                <Form.Control name="mobile" value={formData.mobile} onChange={handleChange} maxLength="10" required />
+              </Form.Group>
+            </Col>
+            <Col md={6}>
+              <Form.Group>
+                <Form.Label>Email (optional for teacher)</Form.Label>
+                <Form.Control type="email" name="email" value={formData.email} onChange={handleChange} />
               </Form.Group>
             </Col>
           </Row>
 
           <Row className="mb-3">
-
             <Col md={6}>
               <Form.Group>
                 <Form.Label>Password</Form.Label>
@@ -67,8 +73,6 @@ const StaffRegistration = () => {
               <option value="">-- Select Role --</option>
               <option value="admin">Admin</option>
               <option value="teacher">Teacher</option>
-              <option value="student">Student</option>
-              <option value="parent">Parent</option>
               <option value="accountant">Accountant</option>
             </Form.Select>
           </Form.Group>

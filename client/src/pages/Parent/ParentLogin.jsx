@@ -10,12 +10,12 @@ const ParentLogin = () => {
 
   const { loading, error, userInfo } = useSelector((state) => state.auth);
 
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
 
   const submitHandler = (e) => {
     e.preventDefault();
-    dispatch(parentLogin({ email, password }));
+    dispatch(parentLogin({ identifier, password }));
   };
 
   useEffect(() => {
@@ -32,13 +32,13 @@ const ParentLogin = () => {
         {error && <Alert variant="danger">{error}</Alert>}
 
         <Form onSubmit={submitHandler}>
-          <Form.Group controlId="email" className="mb-3">
-            <Form.Label>Email address</Form.Label>
+          <Form.Group controlId="identifier" className="mb-3">
+            <Form.Label>Email or Mobile</Form.Label>
             <Form.Control
-              type="email"
-              placeholder="Enter parent email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="text"
+              placeholder="Enter parent email or mobile"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
               required
             />
           </Form.Group>

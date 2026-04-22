@@ -1,22 +1,26 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import axios from '../../axiosInstance';
 
-const API = process.env.NODE_ENV === "development"
-    ? "http://localhost:5000/" // ✅ Localhost
-    : process.env.REACT_APP_API_URL; // ✅ Render or production 
-export const fetchClasses = createAsyncThunk('class/fetchClasses', async () => {
-  const response = await axios.get(`${API}api/classes`); // backend route
-  return response.data;
-});
-// ✅ Create class
+export const fetchClasses = createAsyncThunk(
+  'class/fetchClasses',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axios.get('/classes');
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.error || err.message);
+    }
+  }
+);
+
 export const createClass = createAsyncThunk(
-  'classes/createClass',
+  'class/createClass',
   async (classData, { rejectWithValue }) => {
     try {
-      const res = await axios.post(`${API}api/classes`, classData);
-      return res.data;
+      const response = await axios.post('/classes', classData);
+      return response.data.classData || response.data;
     } catch (err) {
-      return rejectWithValue(err.response.data);
+      return rejectWithValue(err.response?.data?.error || err.message);
     }
   }
 );
@@ -26,6 +30,7 @@ const classSlice = createSlice({
   initialState: {
     classes: [],
     loading: false,
+    createStatus: null,
     error: null,
   },
   reducers: {},
@@ -33,14 +38,29 @@ const classSlice = createSlice({
     builder
       .addCase(fetchClasses.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(fetchClasses.fulfilled, (state, action) => {
         state.loading = false;
-        state.classes = action.payload;
+        state.classes = Array.isArray(action.payload)
+          ? action.payload
+          : action.payload?.classes || [];
       })
       .addCase(fetchClasses.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload || action.error.message;
+      })
+      .addCase(createClass.pending, (state) => {
+        state.createStatus = 'loading';
+        state.error = null;
+      })
+      .addCase(createClass.fulfilled, (state, action) => {
+        state.createStatus = 'success';
+        if (action.payload) state.classes.push(action.payload);
+      })
+      .addCase(createClass.rejected, (state, action) => {
+        state.createStatus = 'failed';
+        state.error = action.payload || action.error.message;
       });
   },
 });

@@ -13,6 +13,7 @@ import TeacherRoutes from './routes/TeacherRoutes';
 import StudentRoutes from './routes/StudentRoutes';
 import ParentRoutes from './routes/ParentRoutes';
 import AccountantRoutes from './routes/AccountantRoutes';
+import QRAuth from './pages/Admin/QRAuth';
 
 // 🌐 Common Pages
 import Login from './pages/Login';
@@ -29,6 +30,8 @@ const App = () => {
         {/* 🟢 Login Route */}
         <Route path="/" element={<Login />} />
         <Route path='/parent-login' element={<ParentLogin/>} />
+
+        <Route path="/admin/qr-auth" element={<QRAuth />} />
 
         {/* 🔐 Admin Routes */}
         <Route element={<ProtectedRoute allowedRoles={['admin']} />}>

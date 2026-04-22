@@ -1,68 +1,52 @@
 // redux/slices/subjectSlice.js
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import axios from '../../axiosInstance';
 
-const API = process.env.NODE_ENV === "development"
-    ? "http://localhost:5000/" // ✅ Localhost
-    : process.env.REACT_APP_API_URL; // ✅ Render or production 
-
-// ✅ Fetch subjects
 export const fetchSubjects = createAsyncThunk(
   'subjects/fetchSubjects',
   async (_, { rejectWithValue }) => {
     try {
-      const res = await axios.get(`${API}api/subjects/fetchSubjects`);
-      return res.data;
+      const response = await axios.get('/subjects');
+      return response.data;
     } catch (err) {
-      return rejectWithValue(err.response.data);
+      return rejectWithValue(err.response?.data?.error || err.response?.data || err.message);
     }
   }
 );
-// Update subject thunk
-export const updateSubject = createAsyncThunk(
-  'subjects/updateSubject',
-  async ({ id, name }, { rejectWithValue }) => {
-    try {
-      const res = await axios.put(`${API}api/subjects/${id}`, { name });
-      return res.data;  // Updated subject object return kare
-    } catch (err) {
-      return rejectWithValue(err.response?.data || err.message);
-    }
-  }
-);
-// ✅ Create subject
+
 export const createSubject = createAsyncThunk(
   'subjects/createSubject',
-  async (name, { rejectWithValue }) => {
+  async (subjectData, { rejectWithValue }) => {
     try {
-      const res = await axios.post(`${API}api/subjects`, name);
-      return res.data;
+      const response = await axios.post('/subjects', subjectData);
+      return response.data.subject || response.data;
     } catch (err) {
-      return rejectWithValue(err.response.data);
+      return rejectWithValue(err.response?.data?.error || err.response?.data || err.message);
     }
   }
 );
-// ✅ Assign subject to class/teacher
-export const assignSubject = createAsyncThunk(
-  'subjects/assignSubject',
-  async (name, { rejectWithValue }) => {
+
+export const updateSubject = createAsyncThunk(
+  'subjects/updateSubject',
+  async ({ id, updates }, { rejectWithValue }) => {
     try {
-      const res = await axios.post(`${API}api/subjects/assign`, name);
-      return res.data;
+      const response = await axios.put(`/subjects/${id}`, updates);
+      return response.data.updated || response.data;
     } catch (err) {
-      return rejectWithValue(err.response.data);
+      return rejectWithValue(err.response?.data?.error || err.response?.data || err.message);
     }
   }
 );
+
 export const deleteSubject = createAsyncThunk(
   'subjects/deleteSubject',
   async (id, { rejectWithValue }) => {
     try {
-      await axios.delete(`${API}api/subjects/${id}`);
-      return id;  // Return deleted subject id to update state
+      await axios.delete(`/subjects/${id}`);
+      return id;
     } catch (err) {
-      return rejectWithValue(err.response?.data || err.message);
+      return rejectWithValue(err.response?.data?.error || err.response?.data || err.message);
     }
   }
 );
@@ -71,56 +55,66 @@ const subjectSlice = createSlice({
   name: 'subjects',
   initialState: {
     subjects: [],
+    loading: false,
     status: null,
     error: null,
   },
   reducers: {},
-  extraReducers: builder => {
+  extraReducers: (builder) => {
     builder
+      .addCase(fetchSubjects.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.status = 'loading';
+      })
       .addCase(fetchSubjects.fulfilled, (state, action) => {
-        state.subjects = action.payload;
+        state.loading = false;
+        state.subjects = action.payload || [];
         state.status = 'success';
       })
       .addCase(fetchSubjects.rejected, (state, action) => {
-        state.error = action.payload;
+        state.loading = false;
         state.status = 'failed';
+        state.error = action.payload || action.error.message;
+      })
+      .addCase(createSubject.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
       })
       .addCase(createSubject.fulfilled, (state, action) => {
-        state.subjects.push(action.payload);
         state.status = 'success';
+        if (action.payload) state.subjects.push(action.payload);
       })
       .addCase(createSubject.rejected, (state, action) => {
-        state.error = action.payload;
         state.status = 'failed';
+        state.error = action.payload || action.error.message;
       })
-             // Update subject cases
       .addCase(updateSubject.pending, (state) => {
         state.status = 'loading';
         state.error = null;
       })
       .addCase(updateSubject.fulfilled, (state, action) => {
-        const index = state.subjects.findIndex(subj => subj._id === action.payload._id);
-        if (index !== -1) {
-          state.subjects[index] = action.payload;  // State me updated subject ko replace karo
-        }
         state.status = 'success';
+        const index = state.subjects.findIndex((subject) => subject._id === action.payload?._id);
+        if (index !== -1) {
+          state.subjects[index] = action.payload;
+        }
       })
       .addCase(updateSubject.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.payload;
+        state.error = action.payload || action.error.message;
       })
-            // Delete subject cases
       .addCase(deleteSubject.pending, (state) => {
         state.status = 'loading';
         state.error = null;
       })
       .addCase(deleteSubject.fulfilled, (state, action) => {
-        state.subjects = state.subjects.filter(subj => subj._id !== action.payload);
         state.status = 'success';
+        state.subjects = state.subjects.filter((subject) => subject._id !== action.payload);
       })
       .addCase(deleteSubject.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.payload;
+        state.error = action.payload || action.error.message;
       });
   },
 });

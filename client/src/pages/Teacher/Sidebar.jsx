@@ -26,9 +26,33 @@ const Sidebar = () => {
           <li className="nav-item">
             <Link
               to="/teacher/attendance"
-              className={`nav-link ${isActive('/attendance') ? 'bg-primary text-white' : 'text-light'}`}
+              className={`nav-link ${isActive('/attendance') && !isActive('/attendance-report') ? 'bg-primary text-white' : 'text-light'}`}
             >
               <FaClipboardList className="me-2" />Attendance
+            </Link>
+          </li>
+          <li className="nav-item">
+            <Link
+              to="/teacher/attendance-report"
+              className={`nav-link ${isActive('/attendance-report') ? 'bg-primary text-white' : 'text-light'}`}
+            >
+              📈 Attendance Report
+            </Link>
+          </li>
+          <li className="nav-item">
+            <Link
+              to="/teacher/complaints"
+              className={`nav-link ${isActive('/complaints') ? 'bg-primary text-white' : 'text-light'}`}
+            >
+              📝 Raise Complaint
+            </Link>
+          </li>
+          <li className="nav-item">
+            <Link
+              to="/teacher/students"
+              className={`nav-link ${isActive('/students') ? 'bg-primary text-white' : 'text-light'}`}
+            >
+              <FaBookOpen className="me-2" />Student Directory
             </Link>
           </li>
           <li className="nav-item">
@@ -48,8 +72,8 @@ const Sidebar = () => {
             </Link>
           </li>
           <li className="nav-item mb-2">
-                    <Link to="/teacher/enquiry" className="nav-link text-white">Add enquiry</Link>
-                  </li>
+            <Link to="/teacher/enquiry" className="nav-link text-white">Add enquiry</Link>
+          </li>
           <li className="nav-item mt-3">
             <Link
               to="/"

@@ -3,12 +3,12 @@ import { useDispatch } from 'react-redux';
 import { loginUser } from '../redux/slices/authSlice';
 import { useNavigate } from 'react-router-dom';
 import { Form, Button, Container, Row, Col, Card } from 'react-bootstrap';
-import './Login.css'; // custom CSS for background and design
+import './Login.css';
 
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({ mobile: '', password: '' });
+  const [formData, setFormData] = useState({ identifier: '', password: '' });
 
   const handleChange = e => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -19,7 +19,6 @@ const Login = () => {
     const result = await dispatch(loginUser(formData));
     if (result?.payload?.token) {
       const role = result.payload.user.role;
-      
       navigate(`/${role}/dashboard`);
     }
   };
@@ -33,13 +32,13 @@ const Login = () => {
               <h3 className="text-center mb-4 text-primary">🔐 School Login</h3>
               <Form onSubmit={handleLogin}>
                 <Form.Group className="mb-3">
-                  <Form.Label className="fw-semibold">Mobile Number</Form.Label>
+                  <Form.Label className="fw-semibold">Username or Mobile</Form.Label>
                   <Form.Control
                     type="text"
-                    name="mobile"
-                    value={formData.mobile}
+                    name="identifier"
+                    value={formData.identifier}
                     onChange={handleChange}
-                    placeholder="Enter mobile number"
+                    placeholder="Enter username or mobile"
                     required
                   />
                 </Form.Group>

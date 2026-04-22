@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const subjectController = require('../controllers/subjectController');
-// const { verifyToken, authorizeRoles } = require('../middleware/authMiddleware');
+const { protect, adminOnly } = require('../middlewares/authMiddleware');
 
 // Only admin should manage subjects
+router.post('/add', protect, adminOnly, subjectController.addSubject);
 router.post('/', subjectController.createSubject);
 router.get('/', subjectController.getAllSubjects);
 router.get('/:id', subjectController.getSubjectById);

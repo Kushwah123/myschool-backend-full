@@ -1,13 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const { createClass, getAllClasses } = require('../controllers/classController');
-// const protect = require('../middlewares/authMiddleware');
-const protect = require('../middlewares/authMiddleware');
+const { createClass, getAllClasses, assignClassTeacher } = require('../controllers/classController');
+const { protect, adminOnly } = require('../middlewares/authMiddleware');
 
 // Create new class
-router.post('/',  createClass);
+router.post('/', createClass);
+
+// Assign class teacher
+router.put('/assign-teacher', protect, adminOnly, assignClassTeacher);
 
 // Get all classes
-router.get('/',  getAllClasses);
+router.get('/', getAllClasses);
 
 module.exports = router;

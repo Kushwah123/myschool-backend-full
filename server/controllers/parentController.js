@@ -20,22 +20,25 @@ const generateToken = (parent) => {
 exports.addParent = async (req, res) => {
 
     try {
-    const { fullName,  mobile, villageId, studentIds,address } = req.body;
+    const { fullName, email, mobile, villageId, studentIds, address } = req.body;
      console.log(req.body)
     const password = "parent123"; // ✅ Default password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Check if mobile already exists in User collection
-    const existingUser = await Parent.findOne({ mobile });
+        // Check if mobile or email already exists in Parent collection
+    const existingUser = await Parent.findOne({
+      $or: [{ mobile }, { email }]
+    });
     if (existingUser) {
-      return res.status(400).json({ error: "Mobile number already registered." });
+      return res.status(400).json({ error: "Mobile number or email already registered." });
     }
 
 
-    // ✅ Create user for login
+    // ✅ Create user for login (username defaults to mobile so every user has both)
     const user = await User.create({
-      name:fullName,
-       mobile,
+      name: fullName,
+      username: mobile,
+      mobile,
       password: hashedPassword,
       role: "parent",
     });
@@ -44,6 +47,7 @@ exports.addParent = async (req, res) => {
     const parent = await Parent.create({
       // user: user._id,
       fullName,
+      email,
       mobile,
       villageId,
       studentIds,
@@ -66,10 +70,16 @@ exports.addParent = async (req, res) => {
 
  // ✅ Login Parent
 exports.loginParent = async (req, res) => {
-  const { email, password } = req.body;
+  // allow login using mobile or email
+  const { identifier, password } = req.body;
 
   try {
-    const parent = await Parent.findOne({ email });
+    let parent;
+    if (identifier) {
+      parent = await Parent.findOne({
+        $or: [{ email: identifier }, { mobile: identifier }]
+      });
+    }
     if (!parent) return res.status(404).json({ message: "Parent not found" });
 
     const isMatch = await bcrypt.compare(password, parent.password);
@@ -83,6 +93,7 @@ exports.loginParent = async (req, res) => {
         id: parent._id,
         name: parent.fullName,
         email: parent.email,
+        mobile: parent.mobile,
         role: "parent"
       }
     });
