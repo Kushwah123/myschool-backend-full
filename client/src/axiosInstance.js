@@ -1,7 +1,14 @@
 import axios from 'axios';
 
+const getBaseURL = () => {
+  if (process.env.NODE_ENV === 'development') {
+    return 'http://localhost:5000/api'; // Local development
+  }
+  return `${process.env.REACT_APP_API_URL}/api`; // Production (Render)
+};
+
 const instance = axios.create({
-  baseURL: '/api',  // आपके backend की root path
+  baseURL: getBaseURL(),
 });
 
 // 🔐 Interceptor: हर request से पहले token attach करेगा

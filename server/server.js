@@ -9,9 +9,23 @@ const Attendance = require('./models/attendanceModel');
 const app = express();
 dotenv.config();
 
-// Middleware
+// CORS Configuration
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:3000').split(',');
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  credentials: true,
+  optionsSuccessStatus: 200
+};
 
-app.use(cors());
+// Middleware
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Initialize WhatsApp Service
