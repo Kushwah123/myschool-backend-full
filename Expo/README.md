@@ -1,57 +1,27 @@
-# Teacher Panel App
+# Expo Teacher Panel
 
-A modern React Native Expo app for teachers to manage classes and students.
+A modern Android-first teacher panel built with Expo and React Native.
 
-## Features
-
-- Teacher authentication
-- Dashboard with schedule and quick actions
-- Class management with add/edit functionality
-- Student management with attendance tracking
-- Modern Material Design UI using React Native Paper
-
-## Getting Started
+## Run locally
 
 1. Install dependencies:
    ```bash
+   cd Expo
    npm install
    ```
-
-2. Start the development server:
+2. Start Expo:
    ```bash
    npm start
    ```
+3. Run on Android device/emulator:
+   ```bash
+   npm run android
+   ```
 
-3. Run on your preferred platform:
-   - For Android: `npm run android`
-   - For iOS: `npm run ios`
-   - For Web: `npm run web`
+## Features
 
-## Login Credentials
-
-- Email: teacher@example.com
-- Password: password
-
-## Technologies Used
-
-- React Native
-- Expo
-- React Navigation
-- React Native Paper
-- TypeScript
-
-## Project Structure
-
-```
-src/
-  screens/
-    LoginScreen.tsx
-    DashboardScreen.tsx
-    ClassManagementScreen.tsx
-    StudentManagementScreen.tsx
-```
-
-## Notes
-
-- Asset files (icons, splash screens) are placeholders and should be replaced with actual images.
-- This is a demo app with mock data. Integrate with your backend API for real functionality.
+- Clean teacher login screen
+- Dashboard with teaching stats and schedule cards
+- Attendance tracker UI
+- Class list and notification screens
+- Modern dark gradient palette with mobile-friendly layout

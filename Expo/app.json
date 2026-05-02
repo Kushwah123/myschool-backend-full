@@ -3,28 +3,14 @@
     "name": "Teacher Panel",
     "slug": "teacher-panel",
     "version": "1.0.0",
+    "sdkVersion": "49.0.0",
+    "platforms": ["android"],
     "orientation": "portrait",
-    "userInterfaceStyle": "light",
-    "runtimeVersion": "55.0.0",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "ios": {
-      "supportsTablet": true
-    },
+    "userInterfaceStyle": "automatic",
+    "assetBundlePatterns": ["**/*"],
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      }
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
+      "package": "com.myschool.teacherpanel",
+      "permissions": ["INTERNET"]
     }
   }
 }
