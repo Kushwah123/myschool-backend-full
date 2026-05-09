@@ -1,11 +1,21 @@
 import axios from 'axios';
 
 const getBaseURL = () => {
+  // Dev: relative path use karo taaki proxy + prod dono me /api correctly resolve ho.
   if (process.env.NODE_ENV === 'development') {
-    return 'http://localhost:5000/api'; // Local development
+    return '/api';
   }
-  return `${process.env.REACT_APP_API_URL}/api`; // Production (Render)
+
+  // Prod: REACT_APP_API_URL me origin do (e.g. http://localhost:5000 or https://domain.com)
+  // Agar /api already end karta ho to double prefix avoid.
+  const apiUrl = process.env.REACT_APP_API_URL || '';
+  if (!apiUrl) return '/api';
+
+  return apiUrl.endsWith('/api') ? apiUrl : `${apiUrl}/api`;
 };
+
+
+
 
 const instance = axios.create({
   baseURL: getBaseURL(),
