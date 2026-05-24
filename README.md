@@ -1,10 +1,11 @@
-<img width="1890" height="892" alt="Admin-Penal" src="https://github.com/user-attachments/assets/37c235a2-ebab-41d2-b04f-385b2c264773" />
+<img width="1243" height="772" alt="Login" src="https://github.com/user-attachments/assets/91f8d687-8bd2-45d1-92f0-54326cf7810a" />
+
 # 🏫 School Management System (MERN Stack)
 
 A full-featured School Management Web Application built using **MERN Stack** with role-based login for Admin, Teacher, Student, and Parent. The system streamlines academic and administrative workflows including student management, attendance, marks, fee collection, and more.
 
 ---
-
+<img width="1890" height="892" alt="Admin-Penal" src="https://github.com/user-attachments/assets/37c235a2-ebab-41d2-b04f-385b2c264773" />
 ## 🚀 Features
 
 ### ✅ **Multi-Role Authentication (JWT-based)**
@@ -36,6 +37,8 @@ A full-featured School Management Web Application built using **MERN Stack** wit
 - Fully responsive frontend built with **React-Bootstrap**
 - Clean layout with reusable components
 - Redux Toolkit for global state management
+- <img width="1894" height="883" alt="Teacher-Penal" src="https://github.com/user-attachments/assets/68f09ff2-afe5-42b5-a5f7-8dddb428aa4e" />
+
 
 ---
 
