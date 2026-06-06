@@ -2,12 +2,16 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const http = require('http');
+const { Server } = require('socket.io');
 const { errorHandler } = require('./utils/errorHandler');
 const whatsappService = require('./utils/whatsappService');
 const Attendance = require('./models/attendanceModel');
+const initCallSocket = require('./sockets/callSocket');
 
 const app = express();
 dotenv.config();
+const server = http.createServer(app);
 
 // CORS Configuration
 const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:3000').split(',');
@@ -24,6 +28,22 @@ const corsOptions = {
   credentials: true,
   optionsSuccessStatus: 200
 };
+
+const io = new Server(server, {
+  // If you use cookies/credentials from the browser, do NOT use origin: "*".
+  cors: {
+    origin: allowedOrigins,
+    methods: ["GET", "POST"],
+    credentials: true
+  }
+});
+io.on('connection', (socket) => {
+  console.log('SOCKET CONNECTED:', socket.id);
+});
+
+
+initCallSocket(io);
+app.set('io', io);
 
 // Middleware
 app.use(cors(corsOptions));
@@ -90,6 +110,7 @@ const enquiryRoutes = require('./routes/enquiryRoutes');
 const villageRoutes = require('./routes/villageRoutes');
 const complaintRoutes = require('./routes/complaintRoutes');
 const chapterRoutes = require('./routes/chapterRoutes');
+const callRoutes = require('./routes/callRoutes');
 
 // Use Routes
 app.use('/api/auth', authRoutes);
@@ -107,6 +128,7 @@ app.use('/api/homework', homeworkRoutes);
 app.use('/api/enquiries', enquiryRoutes);
 app.use('/api/villages', villageRoutes);
 app.use('/api/complaints', complaintRoutes);
+app.use('/api/calls', callRoutes);
 
 // Default Route
 app.get('/', (req, res) => {
@@ -124,7 +146,7 @@ app.use(errorHandler);
 // Start Server
 const PORT = process.env.PORT || 5000;
 if (process.env.NODE_ENV !== 'test') {
-  app.listen(PORT, () => {
+  server.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
   });
 }
