@@ -22,12 +22,13 @@ const ProtectedRoute = ({ allowedRoles }) => {
   const { token, user } = useSelector((state) => state.auth);
 
   if (!token) return <Navigate to="/" />;
-  console.log(user?.role);
-  if (allowedRoles.includes(user?.role)) {
-    return <Outlet />;
-  } else {
-    return <Navigate to="/unauthorized" />;
-  }
+
+  const currentRole = (user?.role || '').toString().toLowerCase();
+  const allowed = (allowedRoles || []).map((r) => (r || '').toString().toLowerCase());
+
+  if (allowed.includes(currentRole)) return <Outlet />;
+
+  return <Navigate to="/unauthorized" />;
 };
 
 export default ProtectedRoute;
