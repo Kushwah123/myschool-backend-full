@@ -23,6 +23,7 @@ class WhatsAppService {
     if (this.enabled && process.env.NODE_ENV !== 'test') {
       this.scanStatus = 'initializing';
       this.statusMessage = 'Starting WhatsApp service...';
+      console.log('📱 WhatsAppService enabled=', this.enabled, 'sessionPath=', this.sessionPath);
       this.initializeClient();
     } else if (!this.enabled) {
       console.log('📱 WhatsApp service is disabled via WHATSAPP_ENABLED=false');
@@ -39,7 +40,11 @@ class WhatsAppService {
         console.log('📁 Created WhatsApp session directory:', this.sessionPath);
       }
 
-      // Clean up old timestamped directories
+    // IMPORTANT:
+    // Do NOT delete old auth/session directories in production.
+    // Render redeploys/restarts must keep LocalAuth data on persistent disk.
+    if (process.env.WHATSAPP_CLEANUP_AUTH === 'true') {
+      // Clean up old timestamped directories (only when explicitly enabled)
       const parentDir = path.dirname(this.sessionPath);
       const items = fs.readdirSync(parentDir).filter(item =>
         item.startsWith('.wapp_auth_') && item !== path.basename(this.sessionPath)
@@ -56,6 +61,10 @@ class WhatsAppService {
           }
         });
       }
+    } else {
+      console.log('ℹ️ WhatsApp auth cleanup disabled (WHATSAPP_CLEANUP_AUTH != true).');
+    }
+
     } catch (error) {
       console.error('Error ensuring session directory:', error);
     }
@@ -76,7 +85,12 @@ class WhatsAppService {
 
       // QR Code for initial authentication
       this.client.on('qr', (qr) => {
-        this.currentQR = qr;
+        // Logs requested: qr
+        console.log('🔳 qr event received');
+      this.currentQR = qr;
+        // logs requested
+        console.log('🧾 qr token received (string length):', typeof qr === 'string' ? qr.length : null);
+
         this.scanStatus = 'waiting_scan';
         this.statusMessage = 'Scan the QR code with WhatsApp';
         console.log('📱 WhatsApp QR Code - Scan with your phone:');
@@ -114,6 +128,8 @@ class WhatsAppService {
 
       // Initialize the client
       this.client.initialize().catch((error) => {
+        console.error('❌ Puppeteer/WhatsApp initialize error:', error);
+
         console.error('❌ Failed to initialize WhatsApp client:', error.message);
         this.scanStatus = 'error';
         this.statusMessage = 'WhatsApp service failed to start. Will retry in 30 seconds.';
@@ -175,8 +191,22 @@ class WhatsAppService {
       console.log(`✅ Message sent to ${phoneNumber} (${chatId})`);
       return { success: true };
     } catch (error) {
-      const reason = error.message || 'WhatsApp send failed';
+      // Common puppeteer/whatsapp-web.js issue when session/frame gets detached.
+      // Example: "Attempted to use detached Frame ..."
+      const reason = error?.message || 'WhatsApp send failed';
       console.error(`Error sending message to ${phoneNumber} (${chatId}):`, reason);
+
+      // If client/frame is detached, force reconnect once to recover.
+      if (typeof reason === 'string' && reason.toLowerCase().includes('detached frame')) {
+        this.scanStatus = 'error';
+        this.statusMessage = 'WhatsApp session frame detached. Reconnecting...';
+        try {
+          await this.reconnectClient();
+        } catch (e) {
+          console.error('Error during reconnect after detached frame:', e?.message || e);
+        }
+      }
+
       return { success: false, reason };
     }
   }

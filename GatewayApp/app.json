@@ -1,0 +1,33 @@
+{
+  "expo": {
+    "name": "School SIM Gateway",
+    "slug": "school-gateway",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+ 
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#ffffff"
+      },
+      "permissions": [
+        "android.permission.CALL_PHONE",
+        "android.permission.READ_PHONE_STATE",
+        "android.permission.PROCESS_OUTGOING_CALLS",
+        "android.permission.INTERNET",
+        "android.permission.ACCESS_NETWORK_STATE",
+        "android.permission.CHANGE_NETWORK_STATE",
+        "android.permission.READ_CONTACTS",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.myschool.gateway"
+    }
+  }
+}

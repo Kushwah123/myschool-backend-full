@@ -6,27 +6,42 @@ const bcrypt = require('bcryptjs');
 
 (async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+    await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    });
+
     console.log('connected to mongo');
+
     const mobile = '8909861356';
-    const existing = await User.findOne({ mobile });
+    const passwordPlain = 'admin@123';
+
+    // Create admin if not exists (by mobile or username)
+    const existing = await User.findOne({
+      $or: [{ mobile }, { username: mobile }, { role: 'admin' }]
+    });
+
     if (existing) {
-      console.log('already exists', existing);
+      console.log('admin already exists', existing._id);
     } else {
-      const hashed = await bcrypt.hash('123', 12);
+      const hashed = await bcrypt.hash(passwordPlain, 12);
+
       const u = await User.create({
         name: 'Admin User',
         username: mobile,
-        email: 'admin@school.com',
         mobile,
         password: hashed,
-        role: 'admin'
+        role: 'admin',
+        isActive: true
       });
-      console.log('created', u);
+
+      console.log('created admin', u._id);
     }
+
     process.exit(0);
   } catch (err) {
     console.error(err);
     process.exit(1);
   }
 })();
+

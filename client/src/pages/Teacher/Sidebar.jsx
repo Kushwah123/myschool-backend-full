@@ -1,88 +1,85 @@
-  import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { logoutUser } from '../../redux/slices/authSlice';
 import { FaChalkboardTeacher, FaClipboardList, FaBookOpen, FaHome, FaSignOutAlt } from 'react-icons/fa';
+import './Sidebar.css';
 
-const Sidebar = () => {
+const Sidebar = ({ onItemClick }) => {
   const location = useLocation();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const isActive = (path) => location.pathname.includes(path);
 
+  const handleNavClick = () => {
+    if (onItemClick) onItemClick();
+  };
+
+  const handleLogout = (e) => {
+    e.preventDefault();
+    dispatch(logoutUser());
+    navigate('/');
+    if (onItemClick) onItemClick();
+  };
+
+  const navItems = [
+    { path: '/teacher/dashboard', label: 'Dashboard', icon: <FaHome /> },
+    { path: '/teacher/attendance', label: 'Attendance', icon: <FaClipboardList />, checkPath: (loc) => isActive('/attendance') && !isActive('/attendance-report') },
+    { path: '/teacher/attendance-report', label: 'Attendance Report', icon: '📈' },
+    { path: '/teacher/complaints', label: 'Raise Complaint', icon: '📝' },
+    { path: '/teacher/students', label: 'Student Directory', icon: <FaBookOpen /> },
+    { path: '/teacher/marks', label: 'Marks', icon: <FaBookOpen /> },
+    { path: '/teacher/homework', label: 'Homework', icon: '📚' },
+  ];
+
   return (
-    <div className="bg-dark text-white vh-100" style={{ width: '250px' }}>
-      <div className="text-center py-4 border-bottom border-secondary">
-        <h5><FaChalkboardTeacher className="me-2" />Teacher Panel</h5>
+    <div className="teacher-sidebar">
+      <div className="sidebar-header">
+        <FaChalkboardTeacher className="me-2" size={24} />
+        <span className="sidebar-title">Teacher Panel</span>
       </div>
 
-      <div className="p-3">
-        <ul className="nav flex-column gap-2">
+      <nav className="sidebar-nav">
+        <ul className="nav-list">
+          {navItems.map((item, idx) => {
+            const active = item.checkPath ? item.checkPath(location) : isActive(item.path);
+            return (
+              <li key={idx} className="nav-item">
+                <Link
+                  to={item.path}
+                  className={`nav-link ${active ? 'active' : ''}`}
+                  onClick={handleNavClick}
+                >
+                  <span className="nav-icon">{item.icon}</span>
+                  <span className="nav-label">{item.label}</span>
+                </Link>
+              </li>
+            );
+          })}
+
           <li className="nav-item">
             <Link
-              to="/teacher/dashboard"
-              className={`nav-link ${isActive('/dashboard') ? 'bg-primary text-white' : 'text-light'}`}
+              to="/teacher/enquiry"
+              className="nav-link"
+              onClick={handleNavClick}
             >
-              <FaHome className="me-2" />Dashboard
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link
-              to="/teacher/attendance"
-              className={`nav-link ${isActive('/attendance') && !isActive('/attendance-report') ? 'bg-primary text-white' : 'text-light'}`}
-            >
-              <FaClipboardList className="me-2" />Attendance
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link
-              to="/teacher/attendance-report"
-              className={`nav-link ${isActive('/attendance-report') ? 'bg-primary text-white' : 'text-light'}`}
-            >
-              📈 Attendance Report
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link
-              to="/teacher/complaints"
-              className={`nav-link ${isActive('/complaints') ? 'bg-primary text-white' : 'text-light'}`}
-            >
-              📝 Raise Complaint
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link
-              to="/teacher/students"
-              className={`nav-link ${isActive('/students') ? 'bg-primary text-white' : 'text-light'}`}
-            >
-              <FaBookOpen className="me-2" />Student Directory
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link
-              to="/teacher/marks"
-              className={`nav-link ${isActive('/marks') ? 'bg-primary text-white' : 'text-light'}`}
-            >
-              <FaBookOpen className="me-2" />Marks
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link
-              to="/teacher/homework"
-              className={`nav-link ${isActive('/homework') ? 'bg-primary text-white' : 'text-light'}`}
-            >
-              📚 Homework
-            </Link>
-          </li>
-          <li className="nav-item mb-2">
-            <Link to="/teacher/enquiry" className="nav-link text-white">Add enquiry</Link>
-          </li>
-          <li className="nav-item mt-3">
-            <Link
-              to="/"
-              className="nav-link text-danger"
-            >
-              <FaSignOutAlt className="me-2" />Logout
+              <span className="nav-icon">❓</span>
+              <span className="nav-label">Enquiry</span>
             </Link>
           </li>
         </ul>
+      </nav>
+
+      <div className="sidebar-footer">
+        <button
+          className="nav-link logout-link"
+          onClick={handleLogout}
+          style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer' }}
+        >
+          <FaSignOutAlt size={16} />
+          <span>Logout</span>
+        </button>
       </div>
     </div>
   );

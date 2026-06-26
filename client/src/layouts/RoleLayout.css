@@ -1,87 +1,216 @@
 .layout-container {
   display: flex;
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Sidebar Backdrop */
+.sidebar-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1049;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* Sidebar */
 .sidebar-wrapper {
-   position: fixed;
+  position: fixed;
   top: 0;
   left: 0;
   width: 250px;
   height: 100vh;
-  background-color: #343a40;
-  color: #fff;
+  background-color: #2c3e50;
   overflow-y: auto;
   z-index: 1050;
-  transform: translateX(0); /* Always visible by default */
-  transition: transform 0.3s ease-in-out;
-}
-
-/* Show sidebar when toggled */
-.sidebar-wrapper.open {
   transform: translateX(0);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Main content */
 .main-content {
   flex: 1;
+  display: flex;
+  flex-direction: column;
   margin-left: 250px;
-  transition: margin-left 0.3s ease-in-out;
+  width: calc(100% - 250px);
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
 }
 
 /* Page content */
 .page-content {
+  flex: 1;
   padding: 20px;
-  min-height: calc(100vh - 76px); /* Account for header height */
   overflow-y: auto;
+  background-color: #f8f9fa;
 }
 
-/* Hide sidebar on mobile */
+/* Page content scrollbar styling */
+.page-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.page-content::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.page-content::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.page-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Toggle Button */
+.toggle-btn {
+  position: fixed;
+  top: 15px;
+  left: 12px;
+  z-index: 1060;
+  background-color: #3498db;
+  border: none;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(52, 152, 219, 0.4);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.toggle-btn:hover {
+  background-color: #2980b9;
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.6);
+  transform: translateY(-2px);
+}
+
+.toggle-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 4px rgba(52, 152, 219, 0.4);
+}
+
+/* ========================================
+   TABLET RESPONSIVE (768px and below)
+   ======================================== */
 @media (max-width: 768px) {
   .sidebar-wrapper {
     transform: translateX(-100%);
+    width: 70vw;
+    max-width: 280px;
   }
 
   .sidebar-wrapper.open {
     transform: translateX(0);
+    box-shadow: 4px 0 16px rgba(0, 0, 0, 0.15);
   }
 
   .main-content {
     margin-left: 0;
-  }
-
-  /* Add backdrop when sidebar is open on mobile */
-  .sidebar-wrapper.open::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 250px;
-    width: calc(100vw - 250px);
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: -1;
+    width: 100%;
   }
 
   .page-content {
-    padding-top: 100px; /* Extra padding for toggle button */
+    padding: 70px 16px 20px 16px;
+  }
+
+  .toggle-btn {
+    display: flex;
   }
 }
 
-.toggle-btn {
-  position: fixed;
-  top: 70px; /* Position below the navbar */
-  left: 10px;
-  z-index: 1060;
-  background-color: #007bff;
-  border: none;
-  color: white;
-  padding: 8px 12px;
-  border-radius: 4px;
-  font-size: 16px;
-  cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+/* ========================================
+   MOBILE RESPONSIVE (480px and below)
+   ======================================== */
+@media (max-width: 480px) {
+  .sidebar-wrapper {
+    width: 85vw;
+    max-width: 320px;
+  }
+
+  .page-content {
+    padding: 65px 12px 16px 12px;
+  }
+
+  .toggle-btn {
+    top: 10px;
+    left: 8px;
+    padding: 6px 10px;
+    font-size: 18px;
+  }
+
+  /* Adjust content when sidebar is open */
+  .sidebar-wrapper.open ~ .main-content {
+    position: relative;
+    z-index: 1048;
+  }
 }
 
-.toggle-btn:hover {
-  background-color: #0056b3;
+/* ========================================
+   VERY SMALL SCREENS (below 360px)
+   ======================================== */
+@media (max-width: 360px) {
+  .sidebar-wrapper {
+    width: 90vw;
+  }
+
+  .page-content {
+    padding: 60px 10px 12px 10px;
+  }
+
+  .toggle-btn {
+    top: 8px;
+    left: 6px;
+    padding: 5px 8px;
+  }
 }
+
+/* Desktop and larger (1024px and above) */
+@media (min-width: 769px) {
+  .toggle-btn {
+    display: none !important;
+  }
+
+  .sidebar-wrapper {
+    transform: translateX(0) !important;
+  }
+}
+
+/* Scrollbar styling for sidebar */
+.sidebar-wrapper::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar-wrapper::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.sidebar-wrapper::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+.sidebar-wrapper::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+

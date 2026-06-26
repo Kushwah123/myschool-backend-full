@@ -48,6 +48,9 @@ const AllStudents = () => {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+  const allFilteredIds = filteredStudents.map((student) => student._id);
+  const isAllFilteredSelected =
+    allFilteredIds.length > 0 && allFilteredIds.every((id) => selectedIds.includes(id));
 
   const handlePrint = useReactToPrint({ content: () => componentRef.current });
 
@@ -87,6 +90,16 @@ const AllStudents = () => {
     setSelectedIds((prev) =>
       prev.includes(id) ? prev.filter((sid) => sid !== id) : [...prev, id]
     );
+  };
+
+  const handleSelectAll = () => {
+    setSelectedIds((prev) => {
+      if (isAllFilteredSelected) {
+        return prev.filter((id) => !allFilteredIds.includes(id));
+      }
+
+      return [...new Set([...prev, ...allFilteredIds])];
+    });
   };
 
   const handleDeleteSelected = () => {
@@ -151,8 +164,18 @@ const AllStudents = () => {
           </Row>
 
           {/* Bulk Actions */}
-          <Row className="mb-3">
-            <Col className="text-end">
+          <Row className="mb-3 align-items-center">
+            <Col md={8} className="d-flex align-items-center gap-2">
+              <Form.Check
+                type="checkbox"
+                id="select-all-filtered-students"
+                label={`Select all filtered students (${filteredStudents.length})`}
+                checked={isAllFilteredSelected}
+                onChange={handleSelectAll}
+                disabled={filteredStudents.length === 0}
+              />
+            </Col>
+            <Col md={4} className="text-end">
               <Button
                 variant="danger"
                 disabled={selectedIds.length === 0}
@@ -168,7 +191,15 @@ const AllStudents = () => {
             <Table striped bordered hover responsive className="text-center">
               <thead className="table-dark">
                 <tr>
-                  <th>Select</th>
+                  <th>
+                    <Form.Check
+                      type="checkbox"
+                      aria-label="Select all visible students"
+                      checked={isAllFilteredSelected}
+                      onChange={handleSelectAll}
+                      disabled={filteredStudents.length === 0}
+                    />
+                  </th>
                   <th>Roll No</th>
                   <th>Name</th>
                   <th>Father</th>

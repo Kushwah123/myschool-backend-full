@@ -1,0 +1,453 @@
+.teacher-dashboard {
+  padding: 0;
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Dashboard Header */
+.dashboard-header {
+  margin-bottom: 24px;
+}
+
+.dashboard-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.5px;
+}
+
+.dashboard-subtitle {
+  font-size: 14px;
+  color: #7f8c8d;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Stats Cards */
+.dashboard-stats {
+  margin-bottom: 24px;
+}
+
+.stat-col {
+  display: flex;
+}
+
+.stat-card {
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  overflow: hidden;
+  position: relative;
+}
+
+.stat-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+.stat-card > .card-body {
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 120px;
+}
+
+.stat-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  opacity: 0.75;
+}
+
+.stat-value {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+/* Card color variations */
+.stat-card--present {
+  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+  color: white;
+}
+
+.stat-card--present .stat-label {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.stat-card--present .stat-value {
+  color: white;
+}
+
+.stat-card--absent {
+  background: linear-gradient(135deg, #e74c3c 0%, #ec7063 100%);
+  color: white;
+}
+
+.stat-card--absent .stat-label {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.stat-card--absent .stat-value {
+  color: white;
+}
+
+.stat-card--total {
+  background: linear-gradient(135deg, #3498db 0%, #5dade2 100%);
+  color: white;
+}
+
+.stat-card--total .stat-label {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.stat-card--total .stat-value {
+  color: white;
+}
+
+.stat-card--report {
+  background: linear-gradient(135deg, #9b59b6 0%, #c39bd3 100%);
+  color: white;
+  justify-content: center;
+  align-items: center;
+}
+
+.stat-card--report .stat-label {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.stat-card--report .btn {
+  margin-top: 8px !important;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  background-color: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+  color: white;
+}
+
+.stat-card--report .btn:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+  border-color: rgba(255, 255, 255, 0.6);
+  color: white;
+}
+
+/* Attendance Section */
+.attendance-col {
+  display: flex;
+}
+
+.attendance-card {
+  width: 100%;
+  border: 1px solid #ecf0f1;
+  border-radius: 8px;
+}
+
+.attendance-card > .card-body {
+  padding: 20px;
+}
+
+.attendance-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.attendance-title-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.attendance-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0;
+}
+
+.attendance-date {
+  font-size: 12px;
+  color: #95a5a6;
+  font-weight: 500;
+}
+
+/* Table Responsive */
+.attendance-table-wrapper {
+  margin: 0 -20px -20px -20px;
+  padding: 0;
+  border-radius: 0 0 8px 8px;
+}
+
+.attendance-table {
+  margin: 0;
+  font-size: 13px;
+}
+
+.attendance-table thead {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #ecf0f1;
+}
+
+.attendance-table thead th {
+  font-weight: 600;
+  color: #2c3e50;
+  padding: 12px 10px;
+  text-align: left;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: none;
+}
+
+.attendance-table tbody tr {
+  border-bottom: 1px solid #ecf0f1;
+  transition: background-color 0.2s ease;
+}
+
+.attendance-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.attendance-table td {
+  padding: 12px 10px;
+  vertical-align: middle;
+  color: #34495e;
+}
+
+.student-cell {
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.status-cell {
+  text-align: center;
+}
+
+.status-cell .badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+/* No Data Message */
+.no-data-message {
+  text-align: center;
+  padding: 40px 20px;
+  color: #95a5a6;
+  font-size: 14px;
+  background-color: #f8f9fa;
+  border-radius: 0 0 8px 8px;
+  margin: 0 -20px -20px -20px;
+}
+
+.no-data-message p {
+  margin: 0;
+}
+
+/* ========================================
+   TABLET RESPONSIVE (768px and below)
+   ======================================== */
+@media (max-width: 768px) {
+  .dashboard-title {
+    font-size: 24px;
+  }
+
+  .dashboard-header {
+    margin-bottom: 20px;
+  }
+
+  .dashboard-stats {
+    margin-bottom: 20px;
+    gap: 12px !important;
+  }
+
+  .stat-card > .card-body {
+    padding: 16px 12px;
+    min-height: 110px;
+  }
+
+  .stat-value {
+    font-size: 28px;
+  }
+
+  .stat-label {
+    font-size: 11px;
+  }
+
+  .attendance-card > .card-body {
+    padding: 16px;
+  }
+
+  .attendance-title {
+    font-size: 16px;
+  }
+
+  .attendance-table {
+    font-size: 12px;
+  }
+
+  .attendance-table thead th {
+    padding: 10px 8px;
+    font-size: 11px;
+  }
+
+  .attendance-table td {
+    padding: 10px 8px;
+  }
+
+  .attendance-table-wrapper {
+    margin: 0 -16px -16px -16px;
+  }
+
+  .no-data-message {
+    margin: 0 -16px -16px -16px;
+    padding: 30px 16px;
+    font-size: 13px;
+  }
+}
+
+/* ========================================
+   MOBILE RESPONSIVE (480px and below)
+   ======================================== */
+@media (max-width: 480px) {
+  .dashboard-title {
+    font-size: 20px;
+  }
+
+  .dashboard-subtitle {
+    font-size: 12px;
+  }
+
+  .dashboard-header {
+    margin-bottom: 16px;
+  }
+
+  .dashboard-stats {
+    margin-bottom: 16px;
+    gap: 10px !important;
+  }
+
+  .stat-col {
+    min-height: auto;
+  }
+
+  .stat-card > .card-body {
+    padding: 14px 10px;
+    min-height: 100px;
+  }
+
+  .stat-value {
+    font-size: 24px;
+  }
+
+  .stat-label {
+    font-size: 10px;
+  }
+
+  .stat-card--report .btn {
+    padding: 5px 10px !important;
+    font-size: 11px;
+  }
+
+  .attendance-header {
+    margin-bottom: 16px;
+    gap: 8px;
+  }
+
+  .attendance-title {
+    font-size: 15px;
+  }
+
+  .attendance-date {
+    font-size: 11px;
+  }
+
+  .attendance-card > .card-body {
+    padding: 14px 12px;
+  }
+
+  .attendance-table {
+    font-size: 11px;
+  }
+
+  .attendance-table thead th {
+    padding: 8px 6px;
+    font-size: 10px;
+  }
+
+  .attendance-table td {
+    padding: 8px 6px;
+  }
+
+  .attendance-table-wrapper {
+    margin: 0 -12px -14px -12px;
+  }
+
+  .no-data-message {
+    margin: 0 -12px -14px -12px;
+    padding: 24px 12px;
+    font-size: 12px;
+  }
+}
+
+/* ========================================
+   VERY SMALL SCREENS (below 360px)
+   ======================================== */
+@media (max-width: 360px) {
+  .dashboard-title {
+    font-size: 18px;
+  }
+
+  .stat-card > .card-body {
+    min-height: 90px;
+    padding: 12px 8px;
+  }
+
+  .stat-value {
+    font-size: 22px;
+  }
+
+  .attendance-table thead th,
+  .attendance-table td {
+    padding: 6px 5px;
+    font-size: 10px;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .toggle-btn {
+    display: none;
+  }
+
+  .dashboard-stats {
+    break-inside: avoid;
+  }
+
+  .stat-card {
+    page-break-inside: avoid;
+  }
+}

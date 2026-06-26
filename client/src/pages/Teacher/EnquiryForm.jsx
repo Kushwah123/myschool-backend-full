@@ -38,8 +38,12 @@ const EnquiryForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('/api/enquiries', form);
-      toast.success('Enquiry submitted successfully!');
+      const response = await axios.post('/api/enquiries', form);
+      const whatsappStatus = response?.data?.whatsapp?.success
+        ? 'A welcome WhatsApp message was also sent to the parent.'
+        : 'WhatsApp message could not be sent right now, but the enquiry was saved.';
+
+      toast.success(`Enquiry submitted successfully! ${whatsappStatus}`);
       setForm({
         parentName: '',
         mobile: '',

@@ -1,8 +1,10 @@
 import React from 'react';
-import { Navbar, Nav, Container, Row, Col } from 'react-bootstrap';
+import { Navbar, Container, Row, Col } from 'react-bootstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import { logoutUser } from '../redux/slices/authSlice';
 import { useNavigate } from 'react-router-dom';
+import { FaSignOutAlt, FaUser } from 'react-icons/fa';
+import './Header.css';
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -32,24 +34,37 @@ const Header = () => {
   };
 
   return (
-    <Navbar bg="primary" variant="dark" expand="lg" className="px-3">
+    <Navbar bg="white" variant="light" expand="lg" className="navbar-header px-3 shadow-sm">
       <Container fluid>
         <Row className="w-100 align-items-center">
-          <Col xs={6}>
-            <Navbar.Brand className="fw-bold">
+          <Col xs={6} md={8}>
+            <Navbar.Brand className="navbar-brand-title fw-bold">
               🎓 {getRoleTitle(user?.role)} Panel
             </Navbar.Brand>
           </Col>
-          <Col xs={6} className="text-end">
-            <span className="text-white me-3 fw-semibold">
-              {user?.name || 'User'}
-            </span>
-            <button
-              className="btn btn-outline-light btn-sm"
-              onClick={handleLogout}
-            >
-              🔒 Logout
-            </button>
+          <Col xs={6} md={4} className="text-end">
+            <div className="user-section d-flex align-items-center justify-content-end gap-3">
+              <div className="user-info">
+                <div className="user-avatar">
+                  <FaUser size={16} />
+                </div>
+              </div>
+              <div className="user-details">
+                <div className="user-name fw-semibold text-dark">
+                  {user?.name || 'User'}
+                </div>
+                <div className="user-role text-muted small">
+                  {getRoleTitle(user?.role)}
+                </div>
+              </div>
+              <button
+                className="btn btn-logout"
+                onClick={handleLogout}
+                title="Logout"
+              >
+                <FaSignOutAlt size={16} />
+              </button>
+            </div>
           </Col>
         </Row>
       </Container>

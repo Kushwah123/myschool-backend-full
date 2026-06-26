@@ -1,9 +1,19 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { logoutUser } from '../../redux/slices/authSlice';
 import { Collapse } from 'react-bootstrap';
+import { FaSignOutAlt } from 'react-icons/fa';
 
 const Sidebar = () => {
   const [openMenu, setOpenMenu] = useState('');
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    dispatch(logoutUser());
+    navigate('/');
+  };
 
   const toggleMenu = (menu) => {
     setOpenMenu(prev => (prev === menu ? '' : menu));
@@ -138,13 +148,7 @@ const Sidebar = () => {
           <Link to="/admin/whatsapp-settings" className="nav-link text-white fw-semibold">📱 WhatsApp Setup</Link>
         </li>
 
-        <li className="nav-item mb-2">
-          <Link to="/admin/simple-qr-test" className="nav-link text-white fw-semibold">🧪 QR Test</Link>
-        </li>
 
-        <li className="nav-item mb-2">
-          <Link to="/admin/qr-login" className="nav-link text-white fw-semibold">🔐 QR Login</Link>
-        </li>
         <li className="nav-item mb-2">
           <Link to="/admin/attendance-report" className="nav-link text-white fw-semibold">📈 Attendance Report</Link>
         </li>
@@ -156,6 +160,15 @@ const Sidebar = () => {
         </li>
 
       </ul>
+
+      <hr className="border-light my-3" />
+      <button
+        onClick={handleLogout}
+        className="btn btn-outline-danger w-100 fw-semibold d-flex align-items-center justify-content-center gap-2"
+      >
+        <FaSignOutAlt size={16} />
+        Logout
+      </button>
     </div>
   );
 };

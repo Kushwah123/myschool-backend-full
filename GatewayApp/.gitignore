@@ -1,0 +1,44 @@
+*.apk
+*.aab
+*.app
+*.ipa
+*.jar
+
+# Expo
+.expo/
+.expo-shared/
+dist/
+npm-debug.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+web-build/
+
+# Node/npm
+node_modules/
+npm-debug.log
+yarn-error.log
+.npmignore
+
+# Environment
+.env
+.env.local
+.env.production
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# React Native
+.watchman-ignore
+
+# Build outputs
+build/
+dist/

@@ -1,5 +1,7 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { logoutUser } from '../../redux/slices/authSlice';
 import {
   FaMoneyBillWave,
   FaClipboardList,
@@ -7,12 +9,20 @@ import {
   FaUserPlus,
   FaUsers,
   FaBookOpen,
+  FaSignOutAlt,
 } from 'react-icons/fa';
 
 const Sidebar = () => {
   const location = useLocation();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const isActive = (path) => location.pathname === path;
+
+  const handleLogout = () => {
+    dispatch(logoutUser());
+    navigate('/');
+  };
 
   return (
     <div className="d-flex flex-column bg-dark text-white p-3" style={{ minHeight: '100vh', width: '250px' }}>
@@ -99,6 +109,14 @@ const Sidebar = () => {
           </Link>
         </li>
       </ul>
+
+      <button
+        onClick={handleLogout}
+        className="btn btn-outline-danger w-100 fw-semibold d-flex align-items-center justify-content-center gap-2 mt-3"
+      >
+        <FaSignOutAlt size={16} />
+        Logout
+      </button>
     </div>
   );
 };

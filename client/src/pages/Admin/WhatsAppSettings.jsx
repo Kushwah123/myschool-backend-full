@@ -2,6 +2,8 @@ import React, { useEffect, useState, useRef } from 'react';
 import axiosInstance from '../../axiosInstance';
 import { FaWhatsapp, FaSync } from 'react-icons/fa';
 import { isValidQRString } from '../../utils/qrCodeUtils';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const WhatsAppSettings = () => {
   const [qrCode, setQrCode] = useState(null);
@@ -13,6 +15,14 @@ const WhatsAppSettings = () => {
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [apiError, setApiError] = useState(null);
   const [qrGenerating, setQrGenerating] = useState(false);
+  const [gatewayDevices, setGatewayDevices] = useState([]);
+  const [deviceLoading, setDeviceLoading] = useState(false);
+  const [deviceSavingId, setDeviceSavingId] = useState('');
+  const [simDrafts, setSimDrafts] = useState({});
+  const [newDeviceId, setNewDeviceId] = useState('');
+  const [newDeviceName, setNewDeviceName] = useState('');
+  const [newSimNumber, setNewSimNumber] = useState('');
+  const [creatingDevice, setCreatingDevice] = useState(false);
   const qrCanvasRef = useRef(null);
 
   // Generate QR image from QR string
@@ -152,6 +162,76 @@ const WhatsAppSettings = () => {
       };
     }
   }, [autoRefresh]);
+
+  const fetchGatewayDevices = async () => {
+    try {
+      setDeviceLoading(true);
+      const response = await axiosInstance.get('/calls/devices');
+      const devices = response.data?.data || [];
+      setGatewayDevices(devices);
+      const drafts = {};
+      devices.forEach((device) => {
+        drafts[device.deviceId] = device.simNumber || '';
+      });
+      setSimDrafts(drafts);
+    } catch (error) {
+      toast.error(error.response?.data?.msg || 'Failed to load gateway devices');
+    } finally {
+      setDeviceLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchGatewayDevices();
+  }, []);
+
+  const handleSimSave = async (deviceId) => {
+    const simNumber = (simDrafts[deviceId] || '').trim();
+    if (!simNumber) {
+      toast.warning('Please enter school SIM number');
+      return;
+    }
+
+    try {
+      setDeviceSavingId(deviceId);
+      await axiosInstance.put(`/calls/devices/${deviceId}/sim`, { simNumber });
+      toast.success('School SIM number updated');
+      fetchGatewayDevices();
+    } catch (error) {
+      toast.error(error.response?.data?.msg || 'Failed to update SIM');
+    } finally {
+      setDeviceSavingId('');
+    }
+  };
+
+  const handleCreateDevice = async () => {
+    const deviceId = newDeviceId.trim();
+    const simNumber = newSimNumber.trim();
+    const deviceName = newDeviceName.trim();
+
+    if (!deviceId || !simNumber) {
+      toast.warning('Device ID and school SIM number are required');
+      return;
+    }
+
+    try {
+      setCreatingDevice(true);
+      await axiosInstance.post('/calls/devices', {
+        deviceId,
+        deviceName,
+        simNumber,
+      });
+      toast.success('Gateway device created and SIM saved');
+      setNewDeviceId('');
+      setNewDeviceName('');
+      setNewSimNumber('');
+      fetchGatewayDevices();
+    } catch (error) {
+      toast.error(error.response?.data?.msg || 'Failed to create gateway device');
+    } finally {
+      setCreatingDevice(false);
+    }
+  };
 
   const getStatusBadge = () => {
     switch (status) {
@@ -385,6 +465,125 @@ const WhatsAppSettings = () => {
             </dl>
           </div>
 
+          {/* Gateway SIM Management */}
+          <div className="mt-5 p-4 border rounded">
+            <div className="d-flex align-items-center justify-content-between mb-3">
+              <h5 className="mb-0">📞 School SIM Setup (Gateway Devices)</h5>
+              <button
+                className="btn btn-sm btn-outline-primary"
+                onClick={fetchGatewayDevices}
+                disabled={deviceLoading}
+              >
+                <FaSync className={deviceLoading ? 'spinner-border spinner-border-sm' : ''} /> Refresh
+              </button>
+            </div>
+            <p className="text-muted mb-3">
+              Admin yahan se har Android gateway phone ka school SIM number set/update kar sakta hai.
+            </p>
+
+            <div className="card mb-3">
+              <div className="card-body">
+                <h6 className="mb-3">Add Gateway Device Manually</h6>
+                <div className="row g-2">
+                  <div className="col-md-4">
+                    <input
+                      type="text"
+                      className="form-control form-control-sm"
+                      placeholder="Device ID (e.g. GATEWAY-01)"
+                      value={newDeviceId}
+                      onChange={(e) => setNewDeviceId(e.target.value)}
+                    />
+                  </div>
+                  <div className="col-md-4">
+                    <input
+                      type="text"
+                      className="form-control form-control-sm"
+                      placeholder="Device Name (optional)"
+                      value={newDeviceName}
+                      onChange={(e) => setNewDeviceName(e.target.value)}
+                    />
+                  </div>
+                  <div className="col-md-3">
+                    <input
+                      type="text"
+                      className="form-control form-control-sm"
+                      placeholder="+91XXXXXXXXXX"
+                      value={newSimNumber}
+                      onChange={(e) => setNewSimNumber(e.target.value)}
+                    />
+                  </div>
+                  <div className="col-md-1 d-grid">
+                    <button
+                      className="btn btn-sm btn-success"
+                      onClick={handleCreateDevice}
+                      disabled={creatingDevice}
+                    >
+                      {creatingDevice ? '...' : 'Add'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {deviceLoading ? (
+              <p className="text-muted mb-0">Loading gateway devices...</p>
+            ) : gatewayDevices.length === 0 ? (
+              <div className="alert alert-warning mb-0">
+                No gateway device connected yet. First connect Android gateway app.
+              </div>
+            ) : (
+              <div className="table-responsive">
+                <table className="table table-sm table-bordered align-middle mb-0">
+                  <thead className="table-light">
+                    <tr>
+                      <th>Device ID</th>
+                      <th>Device Name</th>
+                      <th>Status</th>
+                      <th>School SIM Number</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {gatewayDevices.map((device) => (
+                      <tr key={device.deviceId}>
+                        <td>{device.deviceId}</td>
+                        <td>{device.deviceName || '-'}</td>
+                        <td>
+                          <span className={`badge ${device.isOnline ? 'bg-success' : 'bg-secondary'}`}>
+                            {device.isOnline ? 'Online' : 'Offline'}
+                          </span>{' '}
+                          <span className={`badge ${device.isBusy ? 'bg-warning text-dark' : 'bg-primary'}`}>
+                            {device.isBusy ? 'Busy' : 'Free'}
+                          </span>
+                        </td>
+                        <td style={{ minWidth: '210px' }}>
+                          <input
+                            type="text"
+                            className="form-control form-control-sm"
+                            value={simDrafts[device.deviceId] || ''}
+                            onChange={(e) =>
+                              setSimDrafts((prev) => ({ ...prev, [device.deviceId]: e.target.value }))
+                            }
+                            placeholder="+91XXXXXXXXXX"
+                          />
+                        </td>
+                        <td>
+                          <button
+                            className="btn btn-sm btn-primary"
+                            onClick={() => handleSimSave(device.deviceId)}
+                            disabled={deviceSavingId === device.deviceId}
+                          >
+                            {deviceSavingId === device.deviceId ? 'Saving...' : 'Save SIM'}
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+
           {/* Help Section */}
           {status === 'error' && (
             <div className="alert alert-danger mt-4" role="alert">
@@ -400,6 +599,7 @@ const WhatsAppSettings = () => {
           )}
         </div>
       </div>
+      <ToastContainer position="top-right" autoClose={2500} />
     </div>
   );
 };
