@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { loginUser } from '../../redux/slices/authSlice';
 import { useNavigate } from 'react-router-dom';
-import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
+import { Container, Row, Col, Card, Form, Button, Alert, Spinner } from 'react-bootstrap';
+
 
 const StudentLogin = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const { loading, error } = useSelector((state) => state.auth);
+
   const [formData, setFormData] = useState({
+
     admissionNumber: '',
     password: ''
   });
@@ -35,6 +39,12 @@ const StudentLogin = () => {
             <Card.Body>
               <h3 className="text-center mb-4">Student Login</h3>
               <Form onSubmit={handleSubmit}>
+                {error && (
+                  <Alert variant="danger" className="mb-3">
+                    {typeof error === 'string' ? error : error?.msg || error?.message || 'Login failed'}
+                  </Alert>
+                )}
+
                 <Form.Group className="mb-3">
                   <Form.Label>Admission Number</Form.Label>
                   <Form.Control
@@ -59,9 +69,10 @@ const StudentLogin = () => {
                   />
                 </Form.Group>
 
-                <Button variant="primary" type="submit" className="w-100">
-                  Login
+                <Button variant="primary" type="submit" className="w-100" disabled={loading}>
+                  {loading ? <Spinner animation="border" size="sm" /> : 'Login'}
                 </Button>
+
               </Form>
 
               <div className="text-center mt-3">

@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { loginUser } from '../redux/slices/authSlice';
 import { useNavigate } from 'react-router-dom';
-import { Form, Button, Container, Row, Col, Card } from 'react-bootstrap';
+import { Form, Button, Container, Row, Col, Card, Alert, Spinner } from 'react-bootstrap';
 import './Login.css';
 
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { loading, error } = useSelector((state) => state.auth);
   const [formData, setFormData] = useState({ identifier: '', password: '' });
+
 
   const handleChange = e => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -31,6 +33,12 @@ const Login = () => {
             <Card className="shadow-lg border-0 rounded-4 p-4 login-card">
               <h3 className="text-center mb-4 text-primary">🔐 School Login</h3>
               <Form onSubmit={handleLogin}>
+                {error && (
+                  <Alert variant="danger" className="mb-3">
+                    {typeof error === 'string' ? error : error?.msg || error?.message || 'Login failed'}
+                  </Alert>
+                )}
+
                 <Form.Group className="mb-3">
                   <Form.Label className="fw-semibold">Username or Mobile</Form.Label>
                   <Form.Control
@@ -55,9 +63,10 @@ const Login = () => {
                   />
                 </Form.Group>
 
-                <Button type="submit" variant="primary" className="w-100 mt-2">
-                  Login
+                <Button type="submit" variant="primary" className="w-100 mt-2" disabled={loading}>
+                  {loading ? <Spinner animation="border" size="sm" /> : 'Login'}
                 </Button>
+
 
                 <div className="text-center mt-3">
                   <a href="/parent-login" className="text-decoration-none text-muted">
