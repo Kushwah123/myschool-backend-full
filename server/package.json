@@ -140,10 +140,11 @@
   "scripts": {
     "test": "jest --detectOpenHandles",
     "test:watch": "jest --watch",
-    "start": "nodemon server.js",
+    "start": "node server.js",
     "start:prod": "node server.js",
     "dev": "nodemon server.js",
     "lint": "eslint .",
+    "postinstall": "npx puppeteer browsers install chrome",
     "docker:build": "docker build -t school-backend .",
     "docker:run": "docker run -p 5000:5000 school-backend"
   },
