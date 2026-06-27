@@ -1,4 +1,5 @@
 const { Client, LocalAuth } = require('whatsapp-web.js');
+const puppeteer = require('puppeteer');
 const qrcode = require('qrcode-terminal');
 const fs = require('fs');
 const path = require('path');
@@ -63,16 +64,22 @@ class WhatsAppService {
 
   initializeClient() {
     try {
-      this.client = new Client({
-        authStrategy: new LocalAuth({
-          clientId: 'myschool-app',
-          dataPath: this.sessionPath,
-        }),
-        puppeteer: {
-          headless: true,
-          args: ['--no-sandbox', '--disable-setuid-sandbox'],
-        },
-      });
+this.client = new Client({
+  authStrategy: new LocalAuth({
+    clientId: 'myschool-app',
+    dataPath: this.sessionPath,
+  }),
+  puppeteer: {
+    executablePath: puppeteer.executablePath(),
+    headless: true,
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-gpu'
+    ],
+  },
+});
 
       // QR Code for initial authentication
       this.client.on('qr', (qr) => {
