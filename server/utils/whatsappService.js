@@ -70,7 +70,7 @@ this.client = new Client({
     dataPath: this.sessionPath,
   }),
   puppeteer: {
-    executablePath: puppeteer.executablePath(),
+    // executablePath: puppeteer.executablePath(),
     headless: true,
     args: [
       '--no-sandbox',
