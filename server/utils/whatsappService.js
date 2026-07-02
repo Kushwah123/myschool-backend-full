@@ -62,24 +62,50 @@ class WhatsAppService {
     }
   }
 
+  getPuppeteerExecutablePath() {
+    const envPath = process.env.PUPPETEER_EXECUTABLE_PATH || process.env.CHROME_PATH || process.env.CHROME_BIN;
+    if (envPath) {
+      if (fs.existsSync(envPath)) {
+        console.log('🔍 Using Puppeteer executable from environment:', envPath);
+        return envPath;
+      }
+      console.warn('⚠️ Puppeteer executable path from environment not found:', envPath);
+    }
+
+    try {
+      const resolvedPath = puppeteer.executablePath();
+      if (resolvedPath && fs.existsSync(resolvedPath)) {
+        console.log('🔍 Using Puppeteer executablePath():', resolvedPath);
+        return resolvedPath;
+      }
+      console.warn('⚠️ Puppeteer executablePath() returned missing path:', resolvedPath);
+    } catch (error) {
+      console.warn('⚠️ Unable to resolve Puppeteer executablePath():', error.message);
+    }
+
+    return undefined;
+  }
+
   initializeClient() {
     try {
-this.client = new Client({
-  authStrategy: new LocalAuth({
-    clientId: 'myschool-app',
-    dataPath: this.sessionPath,
-  }),
-  puppeteer: {
-    // executablePath: puppeteer.executablePath(),
-    headless: true,
-    args: [
-      '--no-sandbox',
-      '--disable-setuid-sandbox',
-      '--disable-dev-shm-usage',
-      '--disable-gpu'
-    ],
-  },
-});
+      const executablePath = this.getPuppeteerExecutablePath();
+
+      this.client = new Client({
+        authStrategy: new LocalAuth({
+          clientId: 'myschool-app',
+          dataPath: this.sessionPath,
+        }),
+        puppeteer: {
+          ...(executablePath ? { executablePath } : {}),
+          headless: true,
+          args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-gpu'
+          ],
+        },
+      });
 
       // QR Code for initial authentication
       this.client.on('qr', (qr) => {
