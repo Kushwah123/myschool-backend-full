@@ -92,8 +92,11 @@ const complaintRoutes = require('./routes/complaintRoutes');
 const chapterRoutes = require('./routes/chapterRoutes');
 
 // Use Routes
+app.use('/auth', authRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/students', studentRoutes);
 app.use('/api/students', studentRoutes);
+app.use('/parents', parentRoutes);
 app.use('/api/parents', parentRoutes);
 app.use('/api/teachers', teacherRoutes);
 app.use('/api/classes', classRoutes);

@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { loginUser } from '../redux/slices/authSlice';
 import { useNavigate } from 'react-router-dom';
-import { Form, Button, Container, Row, Col, Card } from 'react-bootstrap';
+import { Form, Button, Container, Row, Col, Card, Alert } from 'react-bootstrap';
 import './Login.css';
 
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { loading, error } = useSelector((state) => state.auth);
   const [formData, setFormData] = useState({ identifier: '', password: '' });
 
   const handleChange = e => {
@@ -55,8 +56,14 @@ const Login = () => {
                   />
                 </Form.Group>
 
-                <Button type="submit" variant="primary" className="w-100 mt-2">
-                  Login
+                {error && (
+                  <Alert variant="danger" className="mt-2 mb-3">
+                    {error}
+                  </Alert>
+                )}
+
+                <Button type="submit" variant="primary" className="w-100 mt-2" disabled={loading}>
+                  {loading ? 'Logging in...' : 'Login'}
                 </Button>
 
                 <div className="text-center mt-3">

@@ -1,10 +1,6 @@
 // authSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from '../../axiosInstance';
-
-const API = process.env.NODE_ENV === "development"
-  ? ""
-  : process.env.REACT_APP_API_URL || '';
+import api from '../../axiosInstance';
 
 // 🧠 Restore state from localStorage if available
 const userFromStorage = localStorage.getItem('user')
@@ -24,7 +20,7 @@ export const loginUser = createAsyncThunk(
   'auth/loginUser',
   async (credentials, { rejectWithValue }) => {
     try {
-      const res = await axios.post(`${API}/auth/login`, credentials);
+      const res = await api.post('/auth/login', credentials);
       const { user, token } = res.data;
       const role = user?.role;
 
@@ -45,7 +41,7 @@ export const parentLogin = createAsyncThunk(
   'auth/parentLogin',
   async ({ identifier, password }, { rejectWithValue }) => {
     try {
-      const res = await axios.post(`${API}/parents/login`, { identifier, password });
+      const res = await api.post('/parents/login', { identifier, password });
       const { user, token } = res.data;
       const role = user?.role;
 
