@@ -96,6 +96,7 @@
     "proxy-addr": "^2.0.7",
     "pstree.remy": "^1.1.8",
     "punycode": "^2.3.1",
+    "puppeteer": "^24.15.0",
     "qrcode-terminal": "^0.12.0",
     "qs": "^6.14.0",
     "range-parser": "^1.2.1",
@@ -140,8 +141,8 @@
   "scripts": {
     "test": "jest --detectOpenHandles",
     "test:watch": "jest --watch",
-    "start": "node server.js",
-    "start:prod": "node server.js",
+    "start": "npx puppeteer browsers install chrome --quiet && node server.js",
+    "start:prod": "npx puppeteer browsers install chrome --quiet && node server.js",
     "dev": "nodemon server.js",
     "lint": "eslint .",
     "postinstall": "npx puppeteer browsers install chrome",
