@@ -17,6 +17,9 @@ class WhatsAppService {
     this.reconnectAttempts = 0;
     this.maxReconnectAttempts = 3;
     this.isReconnecting = false;
+    this.isInitializing = false;
+    this.initializationPromise = null;
+    this.retryTimer = null;
 
     // Ensure session directory exists
     this.ensureSessionDirectory();
@@ -87,8 +90,31 @@ class WhatsAppService {
   }
 
   initializeClient() {
+    if (this.isInitializing || this.initializationPromise) {
+      return this.initializationPromise;
+    }
+
+    if (this.client && this.isReady) {
+      return Promise.resolve(this.client);
+    }
+
     try {
+      this.isInitializing = true;
+      this.scanStatus = 'initializing';
+      this.statusMessage = 'Starting WhatsApp service...';
+      this.currentQR = null;
+
       const executablePath = this.getPuppeteerExecutablePath();
+      const puppeteerArgs = [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-gpu',
+        '--disable-extensions',
+        '--disable-background-timer-throttling',
+        '--disable-backgrounding-occluded-windows',
+        '--disable-renderer-backgrounding',
+      ];
 
       this.client = new Client({
         authStrategy: new LocalAuth({
@@ -98,12 +124,7 @@ class WhatsAppService {
         puppeteer: {
           ...(executablePath ? { executablePath } : {}),
           headless: true,
-          args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage',
-            '--disable-gpu'
-          ],
+          args: puppeteerArgs,
         },
       });
 
@@ -119,9 +140,12 @@ class WhatsAppService {
       // Client ready
       this.client.on('ready', () => {
         this.isReady = true;
+        this.isInitializing = false;
         this.scanStatus = 'ready';
         this.statusMessage = 'WhatsApp connected successfully! 🎉';
         this.currentQR = null;
+        this.reconnectAttempts = 0;
+        this.initializationPromise = null;
         console.log('✅ WhatsApp Client is ready!');
       });
 
@@ -145,24 +169,73 @@ class WhatsAppService {
         setTimeout(() => this.reconnectClient(), 3000);
       });
 
-      // Initialize the client
-      this.client.initialize().catch((error) => {
-        console.error('❌ Failed to initialize WhatsApp client:', error.message);
-        this.scanStatus = 'error';
-        this.statusMessage = 'WhatsApp service failed to start. Will retry in 30 seconds.';
-        this.isReady = false;
-        // Retry after 30 seconds
-        setTimeout(() => {
-          console.log('🔄 Retrying WhatsApp client initialization...');
-          this.initializeClient();
-        }, 30000);
-      });
+      this.initializationPromise = this.client.initialize()
+        .then(() => {
+          this.isInitializing = false;
+          this.initializationPromise = null;
+          return this.client;
+        })
+        .catch((error) => {
+          this.handleInitializationFailure(error);
+          return null;
+        });
+
+      return this.initializationPromise;
     } catch (error) {
-      console.error('❌ Error in WhatsApp client setup:', error);
-      this.scanStatus = 'error';
-      this.statusMessage = 'WhatsApp service setup failed.';
-      this.isReady = false;
+      this.handleInitializationFailure(error);
+      return Promise.resolve(null);
     }
+  }
+
+  handleInitializationFailure(error) {
+    const errorMessage = error?.message || String(error || 'Unknown error');
+    console.error('❌ Failed to initialize WhatsApp client:', errorMessage);
+    this.isReady = false;
+    this.isInitializing = false;
+    this.scanStatus = 'error';
+    this.statusMessage = 'WhatsApp service failed to start. Will retry in 30 seconds.';
+    this.currentQR = null;
+
+    if (this.client) {
+      this.client.removeAllListeners?.();
+      this.client.destroy().catch(() => {});
+      this.client = null;
+    }
+
+    this.cleanupStaleSessionData(errorMessage);
+    this.scheduleRetry();
+  }
+
+  cleanupStaleSessionData(errorMessage = '') {
+    const shouldClean = /EBUSY|EADDRINUSE|Target closed|Target.setDiscoverTargets|Target.setAutoAttach|detached|Protocol error|Session closed|Cannot find Chrome|ERR_CONNECTION/i.test(errorMessage);
+    if (!shouldClean) {
+      return;
+    }
+
+    try {
+      const sessionDir = path.join(this.sessionPath, 'session-myschool-app');
+      if (fs.existsSync(sessionDir)) {
+        fs.rmSync(sessionDir, { recursive: true, force: true });
+        console.log('🧹 Cleaned stale WhatsApp session data after startup failure');
+      }
+      fs.mkdirSync(this.sessionPath, { recursive: true });
+    } catch (cleanupError) {
+      console.warn('⚠️ Could not clean stale WhatsApp session data:', cleanupError.message);
+    }
+  }
+
+  scheduleRetry() {
+    if (this.retryTimer) {
+      clearTimeout(this.retryTimer);
+    }
+
+    this.retryTimer = setTimeout(() => {
+      this.retryTimer = null;
+      if (!this.isInitializing && !this.client) {
+        console.log('🔄 Retrying WhatsApp client initialization...');
+        this.initializeClient();
+      }
+    }, 30000);
   }
 
   async reconnectClient() {
@@ -392,9 +465,16 @@ class WhatsAppService {
    * Disconnect the client
    */
   async disconnect() {
+    if (this.retryTimer) {
+      clearTimeout(this.retryTimer);
+      this.retryTimer = null;
+    }
+
     if (this.client) {
       await this.client.destroy();
+      this.client = null;
       this.isReady = false;
+      this.isInitializing = false;
       console.log('WhatsApp client disconnected');
     }
   }
